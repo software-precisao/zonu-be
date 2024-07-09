@@ -1,0 +1,22 @@
+{
+  "name": "zonu-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/software-precisao/zonu-be.git"
+  },
+  "author": "Team Software Precisão",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/software-precisao/zonu-be/issues"
+  },
+  "homepage": "https://github.com/software-precisao/zonu-be#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
