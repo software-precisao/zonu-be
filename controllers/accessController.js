@@ -32,7 +32,7 @@ const novoAcesso = async (req, res, next) => {
             id_user
         });
 
-        res.status(201).send({ mensagem: 'Acesso registrado com sucesso!', acesso: novoAcesso });
+        res.status(201).send({ mensagem: 'Acesso registrado com sucesso!!', acesso: novoAcesso });
     } catch (error) {
         console.log(error);
         res.status(500).send('Erro ao registrar o acesso.');
