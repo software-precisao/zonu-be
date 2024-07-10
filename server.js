@@ -9,3 +9,5 @@ conn.sync().then(() => {
     server.listen(port);
     console.log('foi iniciado na porta: ' + port);
    }).catch((err) => console.error(err)); 
+
+   //Para garantir que todos os processos do Node.js sejam encerrados quando o server é encerrado
