@@ -282,6 +282,157 @@ const cadastrarUsuarioSimple = async (req, res, next) => {
   }
 };
 
+const editarUsuarioSimples = async (req, res, next) => {
+  try {
+    const { id_user } = req.params;
+
+    const usuarioExistente = await User.findByPk(id_user);
+    if (!usuarioExistente) {
+      return res.status(404).send({
+        mensagem: "Usuário não encontrado",
+      });
+    }
+
+    const filename = req.file ? req.file.filename : usuarioExistente.avatar;
+    const hashedPassword = req.body.senha ? await bcrypt.hash(req.body.senha, 10) : usuarioExistente.senha;
+
+    await User.update(
+      {
+        nome: req.body.nome || usuarioExistente.nome,
+        sobrenome: req.body.sobrenome || usuarioExistente.sobrenome,
+        email: req.body.email || usuarioExistente.email,
+        senha: hashedPassword,
+        avatar: `/avatar/${filename}`,
+        id_plano: req.body.id_plano || usuarioExistente.id_plano,
+        id_status: req.body.id_status || usuarioExistente.id_status,
+        id_nivel: req.body.id_nivel || usuarioExistente.id_nivel,
+      },
+      { where: { id_user: id_user } }
+    );
+
+    if (req.body.novo_qr_code) {
+      const qrData = "https://zonu.com.br/";
+      const qrCodeURL = await QRCode.toDataURL(qrData);
+
+      await Qrcode.update(
+        {
+          qrcode: qrCodeURL,
+          tipo: 2,
+          id_user: id_user,
+        },
+        { where: { id_user: id_user } }
+      );
+    }
+
+    return res.status(200).send({
+      mensagem: "Usuário atualizado com sucesso",
+      usuarioAtualizado: {
+        id_user: id_user,
+        nome: req.body.nome || usuarioExistente.nome,
+        email: req.body.email || usuarioExistente.email,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+const editarCliente = async (req, res, next) => {
+  try {
+    const { id_user } = req.params;
+
+    const usuarioExistente = await User.findByPk(id_user);
+    if (!usuarioExistente) {
+      return res.status(404).send({
+        mensagem: "Usuário não encontrado",
+      });
+    }
+
+    const perfilExistente = await Perfil.findOne({
+      where: { id_user: id_user },
+    });
+    if (!perfilExistente) {
+      return res.status(404).send({
+        mensagem: "Perfil não encontrado",
+      });
+    }
+
+    if (req.body.email && req.body.email !== usuarioExistente.email) {
+      const emailExistente = await User.findOne({
+        where: { email: req.body.email },
+      });
+      if (emailExistente) {
+        return res.status(409).send({
+          mensagem: "Email já cadastrado, por favor insira um email diferente!",
+        });
+      }
+    }
+
+    if (req.body.cnpj && req.body.cnpj !== perfilExistente.cnpj) {
+      const cnpjExistente = await Perfil.findOne({
+        where: { cnpj: req.body.cnpj },
+      });
+      if (cnpjExistente) {
+        return res.status(409).send({
+          mensagem: "CNPJ já cadastrado, por favor insira um CNPJ diferente!",
+        });
+      }
+    }
+
+    const hashedPassword = req.body.senha ? await bcrypt.hash(req.body.senha, 10) : usuarioExistente.senha;
+    const filename = req.file ? req.file.filename : usuarioExistente.avatar;
+    const filenameLogo = req.file ? req.file.filename : perfilExistente.avatar;
+    const filenameCapa = req.file ? req.file.filename : perfilExistente.capa;
+
+    await User.update(
+      {
+        nome: req.body.nome || usuarioExistente.nome,
+        sobrenome: req.body.sobrenome || usuarioExistente.sobrenome,
+        email: req.body.email || usuarioExistente.email,
+        senha: hashedPassword,
+        avatar: `/avatar/${filename}`,
+        id_plano: req.body.id_plano || usuarioExistente.id_plano,
+        id_status: req.body.id_status || usuarioExistente.id_status,
+        id_nivel: req.body.id_nivel || usuarioExistente.id_nivel,
+      },
+      { where: { id_user: id_user } }
+    );
+
+    await Perfil.update(
+      {
+        razao_social: req.body.razao_social || perfilExistente.razao_social,
+        cnpj: req.body.cnpj || perfilExistente.cnpj,
+        telefone: req.body.telefone || perfilExistente.telefone,
+        cep: req.body.cep || perfilExistente.cep,
+        avatar: `/logo/${filenameLogo}`,
+        capa: `/capa/${filenameCapa}`,
+        endereco: req.body.endereco || perfilExistente.endereco,
+        termos: req.body.termos || perfilExistente.termos,
+        numero: req.body.numero || perfilExistente.numero,
+        complemento: req.body.complemento || perfilExistente.complemento,
+        cidade: req.body.cidade || perfilExistente.cidade,
+        estado: req.body.estado || perfilExistente.estado,
+        bairro: req.body.bairro || perfilExistente.bairro,
+      },
+      { where: { id_user: id_user } }
+    );
+
+    return res.status(200).send({
+      mensagem: "Cliente atualizado com sucesso",
+      usuarioAtualizado: {
+        id_user: id_user,
+        nome: req.body.nome || usuarioExistente.nome,
+        email: req.body.email || usuarioExistente.email,
+        id_perfil: perfilExistente.id_perfil,
+        razao_social: req.body.razao_social || perfilExistente.razao_social,
+        cnpj: req.body.cnpj || perfilExistente.cnpj,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
+
 const cadastrarEquipeZonu = async (req, res, next) => {
   try {
     const filename = req.file ? req.file.filename : "default-avatar.png";
@@ -595,6 +746,7 @@ const atualizarDadosUsuario = async (req, res, next) => {
   }
 };
 
+
 const trocaSenha = async (req, res, next) => {
   try {
     const userId = req.params.id_user;
@@ -719,4 +871,6 @@ module.exports = {
   trocaSenha,
   atualizarStatusUsuario,
   atualizarDadosUsuario,
+  editarUsuarioSimples,
+  editarCliente,
 };

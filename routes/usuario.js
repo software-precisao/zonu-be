@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/usuariosController");
 const { uploadFields } = require("../helpers/file-uploader");
-    
+
 router.get("/", userController.obterUsuarios);
 router.get("/:id_user", userController.obterUsuarioPorId);
 router.patch("/status/", userController.atualizarStatusUsuario);
@@ -16,6 +16,14 @@ router.post('/valida-code', userController.validaCode);
 router.post("/cadastro", uploadFields, userController.cadastrarUsuario);
 router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioSimple);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);
+
+router.put("/editar-simples/:id_user", uploadFields, (req, res, next) => {
+    next();
+}, userController.editarUsuarioSimples);
+
+router.put("/editar-cliente/:id_user", uploadFields, (req, res, next) => {
+    next();
+}, userController.editarCliente);
 
 
 module.exports = router;

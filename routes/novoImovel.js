@@ -6,6 +6,9 @@ const novoImovelController = require("../controllers/imovelController");
 router.post("/cadastrar", uploadArray, (req, res, next) => {
     next();
 }, novoImovelController.criarImovel);
+router.put("/editar/:id_imovel", uploadArray, (req, res, next) => {
+    next();
+}, novoImovelController.editarImovel);
 
 router.get('/', novoImovelController.obterTodosImoveisCompletos);
 router.get('/buscar/:id_imovel', novoImovelController.obterImovelCompletoId);

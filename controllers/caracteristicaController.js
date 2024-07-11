@@ -14,7 +14,6 @@ const obterCaracteristicas = async (req, res) => {
   }
 };
 
-
 const obterCaracteristicaPorId = async (req, res) => {
   try {
     const caracteristica = await Caracteristica.findAll({

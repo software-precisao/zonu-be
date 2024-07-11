@@ -79,7 +79,7 @@ const criarImovel = async (req, res) => {
       valor_metro_quadrado: req.body.valor_metro_quadrado,
     });
 
-    
+
     const precoImovel = parseFloat(tabPreco.preco_imovel);
     const areaTotal = parseFloat(req.body.area_total);
     const mediaMetroQuadrado = (precoImovel / areaTotal).toFixed(2);
@@ -258,6 +258,221 @@ const criarImovel = async (req, res) => {
   }
 };
 
+const editarImovel = async (req, res) => {
+  try {
+    const { id_imovel } = req.params;
+
+    const imovelExistente = await Imovel.findByPk(id_imovel);
+    if (!imovelExistente) {
+      return res.status(404).send({ mensagem: "Imóvel não encontrado" });
+    }
+
+    const tabInfo = await Info.update(
+      {
+        cod_referencia: req.body.cod_referencia,
+        tipo: req.body.tipo_imovel,
+        perfil_imovel: req.body.perfil_imovel,
+        situacao_imovel: req.body.situacao_imovel,
+        ano_construcao: req.body.ano_construcao,
+        incorporacao: req.body.incorporacao,
+        posicao_solar: req.body.posicao_solar,
+        terreno: req.body.terreno,
+        proximo_mar: req.body.proximo_mar,
+        averbado: req.body.averbado,
+        escriturado: req.body.escriturado,
+        esquina: req.body.esquina,
+        mobilia: req.body.mobilia,
+        email: req.body.email,
+        nome: req.body.nome,
+      },
+      { where: { id_info: imovelExistente.id_info } }
+    );
+
+    const tabComodos = await Comodos.update(
+      {
+        dormitorio: req.body.dormitorio,
+        suite: req.body.suite,
+        agenciador: req.body.agenciador,
+        banheiro: req.body.banheiro,
+        garagem: req.body.garagem,
+        garagem_coberta: req.body.garagem_coberta,
+        garagem_box: req.body.garagem_box,
+        sala_tv: req.body.sala_tv,
+        sala_jantar: req.body.sala_jantar,
+        lavabo: req.body.lavabo,
+        area_servico: req.body.area_servico,
+        cozinha: req.body.cozinha,
+        closet: req.body.closet,
+        escritorio: req.body.escritorio,
+        casa_empregada: req.body.casa_empregada,
+        copa: req.body.copa,
+      },
+      { where: { id_comodos: imovelExistente.id_comodos } }
+    );
+
+    const tabPreco = await Preco.update(
+      {
+        tipo_negocio: req.body.tipo_negocio,
+        preco_imovel: req.body.preco_imovel,
+        mostra_preco: req.body.mostra_preco,
+        text_preco_opcao: req.body.text_preco_opcao,
+        preco_iptu: req.body.preco_iptu,
+        periodo: req.body.periodo,
+        preco_condominio: req.body.preco_condominio,
+        financiado: req.body.financiado,
+        aceita_financiamento: req.body.aceita_financiamento,
+        minhacasa_minhavida: req.body.minhacasa_minhavida,
+        total_mensal_taxas: req.body.total_mensal_taxas,
+        descricao_taxas: req.body.descricao_taxas,
+        aceita_permuta: req.body.aceita_permuta,
+        descricao_permuta: req.body.descricao_permuta,
+        valor_metro_quadrado: req.body.valor_metro_quadrado,
+      },
+      { where: { id_preco: imovelExistente.id_preco } }
+    );
+
+    const precoImovel = parseFloat(req.body.preco_imovel);
+    const areaTotal = parseFloat(req.body.area_total);
+    const mediaMetroQuadrado = (precoImovel / areaTotal).toFixed(2);
+
+    const tabMedidas = await Medidas.update(
+      {
+        area_contruida: parseFloat(req.body.area_contruida.replace(",", ".")),
+        area_privativa: parseFloat(req.body.area_privativa.replace(",", ".")),
+        area_total: areaTotal,
+        media_metro_quadrado: mediaMetroQuadrado,
+      },
+      { where: { id_medidas: imovelExistente.id_medidas } }
+    );
+
+    const tabLocalizacao = await Localizacao.update(
+      {
+        cep: req.body.cep,
+        pais: req.body.pais,
+        estado: req.body.estado,
+        cidade: req.body.cidade,
+        bairro: req.body.bairro,
+        logradouro: req.body.logradouro,
+        numero: req.body.numero,
+        complemento: req.body.complemento,
+        numero_unidade: req.body.numero_unidade,
+        andar: req.body.andar,
+        unidade_por_andar: req.body.unidade_por_andar,
+        total_andar: req.body.total_andar,
+        total_torres: req.body.total_torres,
+        mostrar_andar_site: req.body.mostrar_andar_site,
+        mostrar_numero_unidade_site: req.body.mostrar_numero_unidade_site,
+        mostrar_logradouro_site: req.body.mostrar_logradouro_site,
+        mostrar_bairro_site: req.body.mostrar_bairro_site,
+        mostrar_complemento_site: req.body.mostrar_complemento_site,
+        mostrar_numero_site: req.body.mostrar_numero_site,
+        mostrar_nome_condominio_site: req.body.mostrar_nome_condominio_site,
+        mostrar_mapa_site: req.body.mostrar_mapa_site,
+      },
+      { where: { id_localizacao: imovelExistente.id_localizacao } }
+    );
+
+    const tabDescricao = await Descricao.update(
+      {
+        titulo: req.body.titulo,
+        apresentacao: req.body.descricao,
+      },
+      { where: { id_descricao: imovelExistente.id_descricao } }
+    );
+
+    const tabComplemento = await Complemento.update(
+      {
+        link_youtube: req.body.link_youtube,
+        link_apresentacao: req.body.link_apresentacao,
+        link_drive: req.body.link_drive,
+      },
+      { where: { id_complemento: imovelExistente.id_complemento } }
+    );
+
+    const tabPublicacao = await Publicacao.update(
+      {
+        mostrar_imovel_publi: req.body.mostrar_imovel_publi,
+        tarja_imovel_site_publi: req.body.tarja_imovel_site_publi,
+        cor_tarja_publi: req.body.cor_tarja_publi,
+      },
+      { where: { id_publicacao: imovelExistente.id_publicacao } }
+    );
+
+    if (req.files && req.files.length > 0) {
+      await Foto.destroy({ where: { id_imovel: id_imovel } });
+      await Promise.all(
+        req.files.map((file) =>
+          Foto.create({
+            foto: `/foto/${file.filename}`,
+            id_imovel: id_imovel,
+          })
+        )
+      );
+    }
+
+    let caracteristicas = [];
+    try {
+      caracteristicas = JSON.parse(req.body.id_caracteristicas);
+    } catch (error) {
+      console.log("Erro ao analisar caracteristicas:", error);
+      return res
+        .status(400)
+        .send({ mensagem: "Formato inválido para caracteristicas" });
+    }
+    if (Array.isArray(caracteristicas)) {
+      await Caracteristicas.destroy({ where: { id_imovel: id_imovel } });
+      await Promise.all(
+        caracteristicas.map((item) =>
+          Caracteristicas.create({
+            id_caracteristica: item,
+            id_imovel: id_imovel,
+          })
+        )
+      );
+    }
+
+    let proximidades = [];
+    try {
+      proximidades = JSON.parse(req.body.id_proximidades);
+    } catch (error) {
+      console.log("Erro ao analisar proximidades:", error);
+      return res
+        .status(400)
+        .send({ mensagem: "Formato inválido para proximidades" });
+    }
+    if (Array.isArray(proximidades)) {
+      await Proximidades.destroy({ where: { id_imovel: id_imovel } });
+      await Promise.all(
+        proximidades.map((dado) =>
+          Proximidades.create({
+            id_proximidades: dado,
+            id_imovel: id_imovel,
+          })
+        )
+      );
+    }
+
+    const qrData = "https://zonu.com.br/imovel?id=" + id_imovel;
+    const qrCodeURL = await QRCode.toDataURL(qrData);
+
+    await Qrcode.update(
+      {
+        qrcode: qrCodeURL,
+        tipo: 1,
+        id_user: req.body.id_user,
+      },
+      { where: { id_imovel: id_imovel } }
+    );
+
+    return res.status(200).send("Imóvel atualizado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao atualizar Imóvel: ", error);
+    return res
+      .status(500)
+      .send({ mensagem: "Erro ao atualizar Imóvel: ", error: error.message });
+  }
+};
+
 const obterImovelCompletoId = async (req, res) => {
   try {
     const { id_imovel } = req.params;
@@ -431,4 +646,5 @@ module.exports = {
   obterImovelCompletoIdUser,
   excluirImovel,
   obterBairro,
+  editarImovel
 };
