@@ -67,7 +67,7 @@ const deletarCondominio = async (req, res, next) => {
       where: { id_condominio: req.params.id_condominio }
     });
     if (deletado) {
-      return res.status(200).send({ message: 'Condomínio deletado com sucesso' });
+      return res.status(  ).send({ message: 'Condomínio deletado com sucesso' });
     } else {
       return res.status(404).send({ message: 'Condomínio não encontrado' });
     }
