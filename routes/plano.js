@@ -4,6 +4,7 @@ const planosController = require("../controllers/planoController");
 
 
 router.get("/", planosController.buscarTodosPlanos);
+router.post("/itensplano", planosController.criarItemPlano);
 router.post("/cadastrar", planosController.criarPlano);
 router.get("/buscar/:id", planosController.buscarPlanoPorId);
 router.put("/edit/:id", planosController.atualizarPlano);

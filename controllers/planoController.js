@@ -1,5 +1,27 @@
 const express = require("express");
 const Plano = require("../models/tb_plano");
+const ItensPlano = require("../models/tb_itens_do_plano");
+
+const criarItemPlano = async (req, res) => {
+  try {
+    const { id_plano, nome_item, descricao_item } = req.body;
+
+    const plano = await Plano.findByPk(id_plano);
+    if (!plano) {
+      return res.status(404).send({ mensagem: "Plano não encontrado." });
+    }
+
+    const itemPlano = await ItensPlano.create({
+      id_plano,
+      nome_item,
+      descricao_item,
+    });
+
+    res.status(201).send(itemPlano);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
 
 const criarPlano = async (req, res) => {
   try {
@@ -70,9 +92,10 @@ const deletarPlano = async (req, res) => {
 };
 
 module.exports = {
+  criarItemPlano,
   criarPlano,
   buscarTodosPlanos,
   buscarPlanoPorId,
   atualizarPlano,
-  deletarPlano
+  deletarPlano,
 };
