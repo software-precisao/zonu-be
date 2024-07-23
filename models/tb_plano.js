@@ -1,7 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
-
 const Plano = conn.define("tb_plano", {
     id_plano: {
         type: DataTypes.INTEGER,
@@ -20,9 +19,6 @@ const Plano = conn.define("tb_plano", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-
 }, { freezeTableName: true });
-
-
 
 module.exports = Plano;

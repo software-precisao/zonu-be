@@ -9,7 +9,6 @@ router.post("/cadastro", precoController.criarPreco);
 router.put("/:id_preco", precoController.atualizarPreco);
 router.delete("/:id_preco", precoController.deletarPreco);
 
-
 /**
  * @swagger
  * tags:

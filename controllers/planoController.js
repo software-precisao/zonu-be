@@ -4,7 +4,7 @@ const ItensPlano = require("../models/tb_itens_do_plano");
 
 const criarItemPlano = async (req, res) => {
   try {
-    const { id_plano, nome_item, descricao_item } = req.body;
+    const { id_plano, nome_item } = req.body;
 
     const plano = await Plano.findByPk(id_plano);
     if (!plano) {
@@ -14,7 +14,6 @@ const criarItemPlano = async (req, res) => {
     const itemPlano = await ItensPlano.create({
       id_plano,
       nome_item,
-      descricao_item,
     });
 
     res.status(201).send(itemPlano);
@@ -35,7 +34,12 @@ const criarPlano = async (req, res) => {
 
 const buscarTodosPlanos = async (req, res) => {
   try {
-    const planos = await Plano.findAll();
+    const planos = await Plano.findAll({
+      include: {
+        model: ItensPlano,
+        as: 'itens_do_plano'
+      }
+    });
     res.send(planos);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -45,7 +49,12 @@ const buscarTodosPlanos = async (req, res) => {
 const buscarPlanoPorId = async (req, res) => {
   try {
     const id = req.params.id;
-    const plano = await Plano.findByPk(id);
+    const plano = await Plano.findByPk(id, {
+      include: {
+        model: ItensPlano,
+        as: 'itens_do_plano'
+      }
+    });
     if (!plano) {
       return res.status(404).send({ mensagem: "Plano não encontrado." });
     }
@@ -79,7 +88,10 @@ const atualizarPlano = async (req, res) => {
 const deletarPlano = async (req, res) => {
   try {
     const id = req.params.id;
-    const plano = await Plano.findByPk(id);
+    const plano = await Plano.findByPk(id, {
+      include: [{ model: ItensPlano, as: 'itens_do_plano' }]
+    });
+    
     if (!plano) {
       return res.status(404).send({ mensagem: "Plano não encontrado." });
     }

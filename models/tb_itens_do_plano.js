@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
-const Plano = require("./tb_plano"); 
+const Plano = require("./tb_plano");
 
 const ItensPlano = conn.define("tb_itens_do_plano", {
     id_item: {
@@ -19,21 +19,21 @@ const ItensPlano = conn.define("tb_itens_do_plano", {
     nome_item: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    descricao_item: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+    }
 }, { freezeTableName: true });
 
 Plano.hasMany(ItensPlano, {
     foreignKey: 'id_plano',
+    as: 'itens_do_plano',
     foreignKeyConstraint: true,
+    onDelete: 'CASCADE',
 });
 
 ItensPlano.belongsTo(Plano, {
     foreignKey: 'id_plano',
+    as: 'plano',
     foreignKeyConstraint: true,
+    onDelete: 'CASCADE', 
 });
 
 module.exports = ItensPlano;
