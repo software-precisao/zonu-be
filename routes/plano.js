@@ -2,11 +2,9 @@ const express = require("express");
 const router = express.Router();
 const planosController = require("../controllers/planoController");
 
-
 router.get("/", planosController.buscarTodosPlanos);
-router.post("/itensplano", planosController.criarItemPlano);
-router.post("/cadastrar", planosController.criarPlano);
 router.get("/buscar/:id", planosController.buscarPlanoPorId);
+router.post("/cadastrar", planosController.criarPlano);
 router.put("/edit/:id", planosController.atualizarPlano);
 router.delete("/delete/:id", planosController.deletarPlano);
 

@@ -19,6 +19,11 @@ const Plano = conn.define("tb_plano", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    itens_do_plano: {
+        type: DataTypes.JSON, // Usando JSON para armazenar um array de itens
+        allowNull: true,
+        defaultValue: [], // Valor padrão como array vazio
+    }
 }, { freezeTableName: true });
 
 module.exports = Plano;
