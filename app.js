@@ -43,6 +43,9 @@ const ProximidadesImovel = require("./models/tb_imovel_proximidades");
 const Proximidades = require("./models/tb_proximidades");
 const QrcodeImovel = require("./models/tb_qrcode");
 const NovoImovel = require("./models/tb_imovel");
+const rotaTokenPay = require("./models/tb_token_payment");
+
+
 
 User.hasOne(Code, {
   foreignKey: "id_user",
@@ -145,6 +148,7 @@ app.use("/ticket", rotaTicket);
 app.use("/termos", rotaTermos);
 app.use("/privacidade", rotaPrivacidade);
 app.use("/anotacao", rotaAnotacao);
+app.use("/tokenPay", rotaTokenPay);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
