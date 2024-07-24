@@ -483,10 +483,30 @@ const obterImovelCompletoId = async (req, res) => {
         { model: Medidas, as: "medidas" },
         { model: Preco, as: "preco" },
         { model: Foto, as: "fotos" },
-        { model: Caracteristicas, as: "caracteristicas" },
+        // { model: Caracteristicas, as: "caracteristicas" },
+        {
+          model: Caracteristicas,
+          as: "caracteristicas",
+          include: [
+            {
+              model: Caracteristica,
+              as: "detalhesCaracteristica",
+            },
+          ],
+        },
         { model: Localizacao, as: "localizacao" },
         { model: Descricao, as: "descricao" },
-        { model: Proximidades, as: "proximidades" },
+        // { model: Proximidades, as: "proximidades" },
+        {
+          model: Proximidades,
+          as: "proximidades",
+          include: [
+            {
+              model: Proximidade,
+              as: "detalhesProximidade",
+            },
+          ],
+        },
         { model: Complemento, as: "complemento" },
         { model: Publicacao, as: "publicacao" },
         { model: Qrcode, as: "qrcode" },
