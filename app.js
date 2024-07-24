@@ -27,6 +27,8 @@ const rotaTicket = require("./routes/ticket");
 const rotaTermos = require("./routes/termos");
 const rotaPrivacidade = require("./routes/privacidade");
 const rotaAnotacao = require("./routes/anotacao");
+const rotaTokenPay = require("./routes/tokenPay");
+const rotaPayment = require("./routes/payments");
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -43,7 +45,7 @@ const ProximidadesImovel = require("./models/tb_imovel_proximidades");
 const Proximidades = require("./models/tb_proximidades");
 const QrcodeImovel = require("./models/tb_qrcode");
 const NovoImovel = require("./models/tb_imovel");
-const rotaTokenPay = require("./models/tb_token_payment");
+
 
 
 
@@ -149,6 +151,7 @@ app.use("/termos", rotaTermos);
 app.use("/privacidade", rotaPrivacidade);
 app.use("/anotacao", rotaAnotacao);
 app.use("/tokenPay", rotaTokenPay);
+app.use("/pay", rotaPayment);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 

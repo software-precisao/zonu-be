@@ -2,7 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 const Usuario = require("./tb_usuarios"); 
 
-const Pagamento = conn.define("tb_pagamento", {
+const Pagamento = conn.define("tb_pagamento_controle", {
     id_pagamento: {
         type: DataTypes.INTEGER,
         autoIncrement: true,

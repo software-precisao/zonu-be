@@ -16,6 +16,10 @@ const path = require("path");
 const fs = require("fs").promises;
 require("dotenv").config();
 
+const axios = require('axios');
+
+const TokenPayment = require("../models/tb_token_payment");
+
 const geoip = require("geoip-lite");
 const moment = require("moment");
 
@@ -72,6 +76,24 @@ const cadastrarUsuario = async (req, res, next) => {
       id_user: novoUsuario.id_user,
     });
 
+
+     // Busca do token da API
+     const tokenData = await TokenPayment.findOne();
+     if (!tokenData) {
+       return res.status(500).send({ error: 'Token da API não encontrado.' });
+     }
+ 
+     const apiKey = tokenData.api_key;
+ 
+     // Envio de dados para a API do Asaas
+     let nome = novoUsuario.nome;
+     let cpfCnpj = novoperfil.cnpj.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+ 
+     const respo = await axios.post('https://sandbox.asaas.com/api/v3/customers', 
+       { name: nome, cpfCnpj }, 
+       { headers: { Authorization: `Bearer ${apiKey}` } }
+     );
+
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
 
     const code = await Code.create({
@@ -87,9 +109,9 @@ const cadastrarUsuario = async (req, res, next) => {
 
     const progressStatus = await Progress.create({
       perfil: 1,
-      logo_capa: 0,
-      imovel: 0,
-      publicacao: 0,
+      logo_capa: 1,
+      imovel: 1,
+      publicacao: 1,
       id_user: novoUsuario.id_user,
     });
 
@@ -147,6 +169,7 @@ const cadastrarUsuario = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
       },
+      asaasResponse: respo.data,
     };
 
     return res.status(202).send(response);
