@@ -33,7 +33,7 @@ const LinkTemporario = conn.define('tb_link_temporario', {
   },
 }, { freezeTableName: true });
 
-LinkTemporario.belongsTo(require('./Usuario'), {
+LinkTemporario.belongsTo(require('../models/tb_usuarios'), {
   foreignKey: 'userId',
   as: 'usuario', 
 });

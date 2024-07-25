@@ -46,7 +46,7 @@ const ProximidadesImovel = require("./models/tb_imovel_proximidades");
 const Proximidades = require("./models/tb_proximidades");
 const QrcodeImovel = require("./models/tb_qrcode");
 const NovoImovel = require("./models/tb_imovel");
-
+const LinkTemporario = require("./models/tb_links_temporarios")
 
 
 
