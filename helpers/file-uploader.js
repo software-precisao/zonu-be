@@ -9,6 +9,8 @@ const storage = multer.diskStorage({
             folder = "logo";
         } else if (file.fieldname === "capa") {
             folder = "capa";
+        } else if (file.fieldname === "documento") {
+            folder = "documento";
         } else if (file.fieldname === "foto") {
             folder = "foto";
         } else {
@@ -23,7 +25,7 @@ const storage = multer.diskStorage({
 
 // Configuração de filtragem de arquivos
 const fileFilter = (req, file, cb) => {
-    if (!file.originalname.match(/\.(png|jpg|jpeg|webp)$/)) {
+    if (!file.originalname.match(/\.(png|jpg|jpeg|webp|pdf)$/)) {
         return cb(new Error("Por favor, envie apenas png, jpg ou jpeg!"));
     }
     cb(undefined, true);
@@ -35,6 +37,7 @@ const uploadFields = multer({
     fileFilter: fileFilter,
 }).fields([
     { name: "avatar", maxCount: 1 },
+    { name: "documento", maxCount: 1 },
     { name: "logo", maxCount: 1 },
     { name: "capa", maxCount: 1 },
     { name: "foto", maxCount: 10 },
