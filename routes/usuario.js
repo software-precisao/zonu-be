@@ -13,9 +13,19 @@ router.patch('/editar/', userController.atualizarDadosUsuario);
 router.post('/verifica-email', userController.obterUsuarioPorEmail);
 router.put('/edit/trocar-senha', userController.trocaSenhaporEmail);
 router.post('/valida-code', userController.validaCode);
-router.post("/cadastro", uploadFields, userController.cadastrarUsuario);
-router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioSimple);
+
+
+//Cadastro de usuários
+router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioAdministrador);
+router.post("/cadastro-construtora", uploadFields, userController.cadastrarUsuarioConstrutora);
+router.post("/cadastro-imobiliaria", uploadFields, userController.cadastrarUsuarioImobiliaria);
+router.post("/cadastro-corretor", uploadFields, userController.cadastrarUsuarioCorretor);
+router.post("/cadastro-vip", uploadFields, userController.cadastrarUsuarioVip);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);
+
+//Envio de documentos
+router.put("/enviodoc-creci/:id_user", uploadFields, userController.atualizarCreci);
+router.put("/enviodoc-cnpj/:id_user", uploadFields, userController.atualizarDocCnpj);
 
 router.put("/editar-simples/:id_user", uploadFields, (req, res, next) => {
     next();

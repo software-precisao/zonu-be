@@ -5,6 +5,8 @@ const Usuario = require("../models/tb_usuarios");
 const Perfil = require("../models/tb_perfil");
 const MyToken = require("../models/tb_token");
 const Qrcode = require("../models/tb_qrcode");
+const Controle = require("../models/tb_controle_teste");
+const UserStatus = require("../models/tb_user_status");
 
 
 const autenticarUsuario = async (req, res, next) => {
@@ -19,9 +21,28 @@ const autenticarUsuario = async (req, res, next) => {
       });
     }
 
+    const controle = await Controle.findOne({ where: { id_user: user.id_user } });
+    if (controle) {
+      const dataFimTeste = new Date(controle.data_inicio);
+      dataFimTeste.setDate(dataFimTeste.getDate() + 7);
+
+      if (new Date() > dataFimTeste && controle.status === 1) {
+        return res.status(203).send({
+          mensagem: "Período de teste expirado.",
+        });
+      }
+    }
+
     const isPasswordValid = await bcrypt.compare(senha, user.senha);
 
     if (isPasswordValid) {
+      const userStatus = await UserStatus.findOne({ where: { id_user: user.id_user } });
+      if (userStatus && userStatus.status === 1) {
+        return res.status(403).send({
+          mensagem: "Usuário já está logado em outro dispositivo.",
+        });
+      }
+
       const perfil = await Perfil.findOne({ where: { id_user: user.id_user } });
       const mytoken = await MyToken.findOne({ where: { id_user: user.id_user } });
       const qrcode = await Qrcode.findOne({ where: { id_user: user.id_user } });
@@ -61,25 +82,25 @@ const autenticarUsuario = async (req, res, next) => {
   }
 };
 
-const logoutUsuario = async (req, res) => {
+const logoutUsuario = async (req, res, next) => {
   try {
-    const { id_user } = req.params;
-    const novoStatus = 0;
+    const { id_user } = req.body;
 
-    const resultado = await Logado.update(
-      { status: novoStatus },
-      { where: { id_user: id_user } }
-    );
+    const user = await Usuario.findByPk(id_user);
 
-    await registrarLog('Usuário deslogado', id_user);
-
-    if (resultado[0] > 0) {
-      return res.status(200).send({ mensagem: "Logout realizado com sucesso." });
-    } else {
-      return res.status(404).send({ mensagem: "Registro de login não encontrado para atualização." });
+    if (!user) {
+      return res.status(404).send({
+        mensagem: "Usuário não encontrado.",
+      });
     }
+
+    await UserStatus.upsert({ id_user: user.id_user, status: 0 });
+
+    return res.status(200).send({
+      mensagem: "Logout realizado com sucesso!",
+    });
   } catch (error) {
-    console.error("Erro ao realizar logout:", error);
+    console.log(error);
     return res.status(500).send({ error: error.message });
   }
 };

@@ -117,7 +117,7 @@
             gap: 8px;
             margin-bottom: 20px;
 
-            background: #17a661;
+            background: #1749a6;
             box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.06), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
 
@@ -162,28 +162,27 @@
             <img class="logo" src="https://zonu.com.br/emailmkt/logo.png" alt="">
 
         <div class="content">
-            <img class="image" src="https://zonu.com.br/emailmkt/img_novo_user.png" alt="">
+            <img class="image" src="https://zonu.com.br/emailmkt/img_aguarde.png" alt="">
 
-            <h1 class="title">Um novo usuário foi cadastrado!</h1>
+            <h1 class="title">Cadastro feito com sucesso!</h1>
 
             <p class="msg">
-                Olá Rodrigo, <br>
-                Acabamos de receber um novo usuário na plataforma. Precisamos que entre na plataforma e faça o acompanhamento do processo. 
-
+                Olá {{nome}}, <br>
+                Recebemos seus dados e seu cadastro está aguardando liberação da nossa equipe. Aguarde só mais alguns instantes para a sua experiência ser completa. 
             </p>
-      
-            <p><strong><small>Nome:</small></strong> {{nome}}</p>
-            <p style="margin-top: 2px;"><strong><small>E-mail:</small></strong> {{email}}</p>
+        
+            <p class="msg">Precisamos que nos envie seus documentos.
+            </p>
 
             <br>
-            <a href="https://zonu.com.br/login" class="btn">Acompanhar o processo</a>
+            <a href="https://zonu.com.br/enviar-documentos/?id={{idUser}}" class="btn">Envie os documentos</a>
         </div>
 
         <footer>
             <div class="full">
                 <ul>
                     <li>
-                        <a href="#">Facebook</a>
+                        <a href="">Facebook</a>
                         <a href="">Linkedin</a>
                         <a href="">Instagram</a>
                     </li>

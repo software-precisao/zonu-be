@@ -20,6 +20,11 @@ const Perfil = conn.define(
       allowNull: true,
       unique: true,
     },
+    cpf: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
     telefone: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -33,6 +38,14 @@ const Perfil = conn.define(
       allowNull: true,
     },
     capa: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    creci: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    doc_cnpj: {
       type: DataTypes.STRING,
       allowNull: true,
     },

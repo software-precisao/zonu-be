@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +8,30 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        *{
+
+        * {
             box-sizing: border-box;
             text-decoration: none;
             list-style: none;
             margin: 0;
             padding: 0;
         }
-        body{
+
+        body {
             margin: 0 auto;
             display: block;
             font-family: "Inter" !important;
             font-optical-sizing: auto;
             font-style: normal;
             font-variation-settings:
-              "slnt" 0;
+                "slnt" 0;
 
-              background: #F7F8FA;
+            background: #F7F8FA;
 
 
         }
 
-        .container{
+        .container {
             display: block;
             margin: 0 auto;
             padding: 40px 0px 40px 0px;
@@ -38,7 +41,7 @@
             background: #F7F8FA;
         }
 
-        .box{
+        .box {
             background: #DEE2E9;
             width: 648px;
             height: 356px;
@@ -46,11 +49,11 @@
             text-align: center;
         }
 
-        .content{
+        .content {
             width: 568px;
             min-height: 100vh;
 
-            margin: 40px auto ;
+            margin: 40px auto;
             padding: 40px;
             display: block;
             gap: 24px;
@@ -62,47 +65,54 @@
 
         }
 
-        .logo{
+        .logo {
             width: 206px;
-            margin: 0 auto ;
+            margin: 0 auto;
             display: block;
         }
 
-        .image{
+        .image {
             max-width: 412px;
             margin: 0 auto;
             display: block;
 
         }
 
-        .title{
+        .title {
             flex: none;
             font-size: 60px;
             font-weight: 700;
-            color: #191847;
+            color: #c2b00a;
             line-height: 121%;
             margin-bottom: 25px
-
         }
 
-        .msg{
+        .msg {
             font-size: 16px;
             line-height: 191%;
             margin-bottom: 40px;
             color: black !important;
         }
 
-        .card{
-            display: flex;
-            flex: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-right:10px;
+        .card {
+            margin: 0 auto 20px;
+            padding: 0;
+            display: inline-block;
             color: black !important;
+            width: 280px;
         }
 
-        .icon{
+        .flex-card {
+            display: flex;
+        }
+
+        .card-group {
+            width: 568px;
+            display: inline-block;
+
+        }
+
+        .icon {
 
             max-width: 48px;
             height: 48px;
@@ -110,21 +120,21 @@
 
         }
 
-        .btn{
+        .btn {
             display: block;
             text-align: center;
             padding: 12px 24px;
             gap: 8px;
             margin-bottom: 20px;
 
-            background: #17a661;
+            background: #c2b00a;
             box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.06), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
 
             color: #fff;
         }
 
-        .link{
+        .link {
             display: block;
             font-weight: 700;
             font-size: 16px;
@@ -132,7 +142,7 @@
             text-align: center;
         }
 
-        footer{
+        footer {
             display: block;
             margin: 0 auto;
             width: 568px;
@@ -142,41 +152,87 @@
             color: #767E9D;
         }
 
-        .full{
+        .full {
             max-width: 100%;
             display: block;
             text-align: center;
         }
 
-        .full a{
+        .full a {
             padding: 5px;
         }
-
-
-
     </style>
 </head>
+
 <body>
 
     <div class="container">
-            <img class="logo" src="https://zonu.com.br/emailmkt/logo.png" alt="">
+        <img class="logo" src="https://zonu.com.br/emailmkt/logo.png" alt="">
 
         <div class="content">
-            <img class="image" src="https://zonu.com.br/emailmkt/img_novo_user.png" alt="">
+            <img class="image" src="https://zonu.com.br/emailmkt/imgVIP.png" alt="">
 
-            <h1 class="title">Um novo usuário foi cadastrado!</h1>
+            <h1 class="title">Um acesso VIP saindo do forno...</h1>
 
             <p class="msg">
-                Olá Rodrigo, <br>
-                Acabamos de receber um novo usuário na plataforma. Precisamos que entre na plataforma e faça o acompanhamento do processo. 
-
+                Olá {{nome}}, <br>
+                Você acaba de entrar para um seleto grupo de usuários VIP da maior plataforma de gestão imobiliária do Brasil.
+                Estamos felizes e queremos que use sem moderação.
             </p>
-      
-            <p><strong><small>Nome:</small></strong> {{nome}}</p>
-            <p style="margin-top: 2px;"><strong><small>E-mail:</small></strong> {{email}}</p>
 
-            <br>
-            <a href="https://zonu.com.br/login" class="btn">Acompanhar o processo</a>
+            <p class="msg">
+                <strong>Conte com a gente!</strong>
+            </p>
+
+           
+            <div class="card-group">
+                <div class="card">
+                    <div class="flex-card">
+                        <img class="icon" src="https://zonu.com.br/emailmkt/iconLocation.png" alt="">
+
+                        <div class="body-card">
+                            <p>Location</p>
+                            <p><strong>{{localizacao}}</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex-card">
+                        <img class="icon" src="https://zonu.com.br/emailmkt/iconPc.png" alt="">
+
+                        <div class="body-card">
+                            <p>IP Address</p>
+                            <p><strong>{{enderecoIp}}</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex-card">
+                        <img class="icon" src="https://zonu.com.br/emailmkt/iconCalendar.png" alt="">
+
+                        <div class="body-card">
+                            <p>Date</p>
+                            <p><strong>{{data}}</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex-card">
+                        <img class="icon" src="https://zonu.com.br/emailmkt/iconClock.png" alt="">
+
+                        <div class="body-card">
+                            <p>Time</p>
+                            <p><strong>{{hora}}</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <a href="https://zonu.com.br/login" class="btn" style="color:#fff !important">Acessar plataforma</a>
         </div>
 
         <footer>
@@ -207,6 +263,7 @@
 
         </footer>
     </div>
-    
+
 </body>
+
 </html>
