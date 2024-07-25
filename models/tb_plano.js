@@ -20,9 +20,9 @@ const Plano = conn.define("tb_plano", {
         allowNull: false,
     },
     itens_do_plano: {
-        type: DataTypes.JSON, // Usando JSON para armazenar um array de itens
+        type: DataTypes.JSON,
         allowNull: true,
-        defaultValue: [], // Valor padrão como array vazio
+        defaultValue: [],
     }
 }, { freezeTableName: true });
 

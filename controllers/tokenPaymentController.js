@@ -4,13 +4,13 @@ const TokenPayment = require("../models/tb_token_payment");
 
 const criarTokenPayment = async (req, res) => {
   try {
-    const { api_key } = req.body;
+    const { api_key, url_base } = req.body;
 
     if (!api_key) {
       return res.status(400).send({ error: "api_key é obrigatório" });
     }
 
-    const tokenPayment = await TokenPayment.create({ api_key });
+    const tokenPayment = await TokenPayment.create({ api_key, url_base });
     res.status(201).send(tokenPayment);
   } catch (error) {
     console.error("Erro ao criar TokenPayment:", error);

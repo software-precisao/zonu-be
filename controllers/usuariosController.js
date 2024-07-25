@@ -523,7 +523,6 @@ const cadastrarUsuarioAdministrador = async (req, res, next) => {
       email: req.body.email,
       senha: hashedPassword,
       avatar: `/avatar/${filename}`,
-      id_plano: req.body.id_plano,
       id_status: 1,
       id_nivel: 1,
     });

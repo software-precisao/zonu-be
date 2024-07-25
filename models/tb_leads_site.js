@@ -1,20 +1,15 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
-const TokenPayment = conn.define(
-  "tb_token_payment",
+const Lead = conn.define(
+  "tb_lead_site",
   {
-    id_token_pay: {
+    id_lead: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      allowNull: false,
       primaryKey: true,
     },
-    api_key: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    url_base: {
+    email: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -22,4 +17,4 @@ const TokenPayment = conn.define(
   { freezeTableName: true }
 );
 
-module.exports = TokenPayment;
+module.exports = Lead;

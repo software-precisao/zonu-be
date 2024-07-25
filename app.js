@@ -29,6 +29,7 @@ const rotaPrivacidade = require("./routes/privacidade");
 const rotaAnotacao = require("./routes/anotacao");
 const rotaTokenPay = require("./routes/tokenPay");
 const rotaPayment = require("./routes/payments");
+const rotaLead = require("./routes/lead");
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -151,6 +152,7 @@ app.use("/termos", rotaTermos);
 app.use("/privacidade", rotaPrivacidade);
 app.use("/anotacao", rotaAnotacao);
 app.use("/tokenPay", rotaTokenPay);
+app.use("/lead", rotaLead);
 app.use("/pay", rotaPayment);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
