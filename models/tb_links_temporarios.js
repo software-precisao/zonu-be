@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const conn = require('../data/conn');
 
-const LinkTemporario = conn.define('LinkTemporario', {
+const LinkTemporario = conn.define('tb_link_temporario', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
