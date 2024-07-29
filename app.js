@@ -30,7 +30,7 @@ const rotaAnotacao = require("./routes/anotacao");
 const rotaTokenPay = require("./routes/tokenPay");
 const rotaPayment = require("./routes/payments");
 const rotaLead = require("./routes/lead");
-const rotaLinkTemporario = require("./routes/linkTemporario");
+const rotaLinkTemporario = require("./routes/linksTemporarios");
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");

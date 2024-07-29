@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const LinkTemporario = require("../models/LinkTemporario"); // Caminho para o modelo LinkTemporario
+const LinkTemporario = require("../models/tb_links_temporarios"); // Caminho para o modelo LinkTemporario
 
 const criarLinkTemporario = async (req, res, next) => {
   try {
