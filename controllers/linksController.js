@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const LinkTemporario = require("../models/tb_links_temporarios"); // Caminho para o modelo LinkTemporario
+const LinkTemporario = require("../models/tb_links_temporarios");
 
 const criarLinkTemporario = async (req, res, next) => {
   try {
     const { userId, url } = req.body;
 
     if (!userId || !url) {
-      return res.status(400).send({ error: 'ID do usuário e URL são obrigatórios' });
+      return res
+        .status(400)
+        .send({ error: "ID do usuário e URL são obrigatórios" });
     }
 
     const dataCriacao = new Date();
@@ -23,6 +25,9 @@ const criarLinkTemporario = async (req, res, next) => {
 
     return res.status(201).send({ response: link });
   } catch (error) {
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(400).send({ error: "A URL deve ser única" });
+    }
     return res.status(500).send({ error: error.message });
   }
 };
@@ -35,7 +40,7 @@ const listarLinksTemporarios = async (req, res, next) => {
       where: { userId },
     });
 
-    const linksAtualizados = links.map(link => {
+    const linksAtualizados = links.map((link) => {
       link.ativo = new Date() < new Date(link.dataExpiracao);
       link.save();
       return link;

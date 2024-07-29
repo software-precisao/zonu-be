@@ -18,6 +18,7 @@ const LinkTemporario = conn.define('tb_link_temporario', {
   url: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   dataCriacao: {
     type: DataTypes.DATE,
