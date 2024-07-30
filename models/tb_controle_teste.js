@@ -42,4 +42,4 @@ Controle.belongsTo(Plano, {
   foreignKeyConstraint: true,
 });
 
-module.exports = Usuario;
+module.exports = Controle;

@@ -353,7 +353,7 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     });
     if (perfilExistente) {
       return res.status(409).send({
-        mensagem: "CPF já cadastrado, por favor insira um CPF diferente!",
+        mensagem: "CNPJ já cadastrado, por favor insira um CPF diferente!",
       });
     }
 
@@ -386,7 +386,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
 
     const novoperfil = await Perfil.create({
 
-
       razao_social: req.body.razao_social,
       cnpj: req.body.cnpj,
       telefone: req.body.telefone,
@@ -408,7 +407,7 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     const novoTeste = await ControleTeste.create({
       data_inicio: format(new Date(), "yyyy-MM-dd"),
       status: 1,
-      id_plano: novoUsuario.id_plano,
+      id_plano: req.body.id_plano,
       id_user: novoUsuario.id_user,
     });
 
@@ -448,13 +447,11 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-    let idUser = novoUsuario.id_user;
-    let codeId = jwt.sign(idUser);
 
     htmlContent = htmlContent
       .replace("{{nome}}", novoUsuario.nome)
       .replace("{{email}}", novoUsuario.email)
-      .replace("{{idUser}}", codeId);
+      .replace("{{idUser}}", novoUsuario.id_user);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
