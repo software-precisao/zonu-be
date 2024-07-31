@@ -19,6 +19,7 @@ router.post('/valida-code', userController.validaCode);
 router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioAdministrador);
 router.post("/cadastro-construtora", uploadFields, userController.cadastrarUsuarioConstrutora);
 router.post("/cadastro-imobiliaria", uploadFields, userController.cadastrarUsuarioImobiliaria);
+router.post("/cadastro-imobiliaria-user", uploadFields, userController.cadastrarSubUsuarioImobiliaria);
 router.post("/cadastro-corretor", uploadFields, userController.cadastrarUsuarioCorretor);
 router.post("/cadastro-vip", uploadFields, userController.cadastrarUsuarioVip);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);

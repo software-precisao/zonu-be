@@ -7,6 +7,7 @@ const Code = require("../models/tb_code");
 const Token = require("../models/tb_token");
 const User = require("../models/tb_usuarios");
 const Perfil = require("../models/tb_perfil");
+const PerfilUser = require("../models/tb_perfil_user_imobiliaria");
 const Progress = require("../models/tb_progressao");
 const Qrcode = require("../models/tb_qrcode");
 const Imovel = require("../models/tb_imovel");
@@ -85,24 +86,6 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
       id_user: novoUsuario.id_user,
     });
 
-
-     // Busca do token da API
-     const tokenData = await TokenPayment.findOne();
-     if (!tokenData) {
-       return res.status(500).send({ error: 'Token da API não encontrado.' });
-     }
- 
-     const apiKey = tokenData.api_key;
- 
-     // Envio de dados para a API do Asaas
-     let nome = novoUsuario.nome;
-     let cpfCnpj = novoperfil.cnpj.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
- 
-     const respo = await axios.post('https://sandbox.asaas.com/api/v3/customers', 
-       { name: nome, cpfCnpj }, 
-       { headers: { Authorization: `Bearer ${apiKey}` } }
-     );
-
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
 
     const code = await Code.create({
@@ -115,7 +98,6 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
       id_user: novoUsuario.id_user,
       token: uuidv4(),
     });
-
 
     const novoTeste = await ControleTeste.create({
       data_inicio: format(new Date(), "yyyy-MM-dd"),
@@ -186,7 +168,7 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
       },
-      asaasResponse: respo.data,
+      asaasResponse: response.data,
     };
 
     return res.status(202).send(response);
@@ -227,7 +209,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       email: req.body.email,
       senha: hashedPassword,
       avatar: `/avatar/${filename}`,
-      id_plano: 3,
+      id_plano: req.body.id_plano,
       id_status: 2,
       id_nivel: 4,
       initial: 1,
@@ -292,13 +274,28 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-    let idUser = novoUsuario.id_user;
-    let codeId = jwt.sign(idUser);
+
+    const token = jwt.sign(
+      {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        sobrenome: novoUsuario.sobrenome,
+        email: novoUsuario.email,
+        avatar: novoUsuario.avatar,
+        id_plano: novoUsuario.id_plano,
+        id_nivel: novoUsuario.id_nivel,
+        id_status: novoUsuario.id_status,
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "6h",
+      }
+    );
 
     htmlContent = htmlContent
       .replace("{{nome}}", novoUsuario.nome)
       .replace("{{email}}", novoUsuario.email)
-      .replace("{{idUser}}", codeId);
+      .replace("{{idUser}}", token);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -512,6 +509,96 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
         periodo: novoTeste.id_controle,
+      },
+    };
+
+    return res.status(202).send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
+  try {
+   
+    const usuarioExistente = await User.findOne({
+      where: { email: req.body.email },
+    });
+    if (usuarioExistente) {
+      return res.status(409).send({
+        mensagem: "Email já cadastrado, por favor insira um email diferente!",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.senha, 10);
+    const filename = req.file ? req.file.filename : "default-avatar.png";
+
+    const novoUsuario = await User.create({
+      nome: req.body.nome,
+      sobrenome: req.body.sobrenome,
+      email: req.body.email,
+      senha: hashedPassword,
+      avatar: `/avatar/${filename}`,
+      id_plano: req.body.id_plano,
+      id_status: 1,
+      id_nivel: 6,
+      initial: 1,
+    });
+
+    const PerfilOriginario = await Perfil.findOne({
+      where: { id_user: req.body.id_user },
+    });
+
+    const novoperfil = await PerfilUser.create({
+
+      id_perfil: PerfilOriginario.id_perfil,
+      id_user: novoUsuario.id_user,
+    });
+
+
+    const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const code = await Code.create({
+      type_code: 1,
+      code: codigoAleatorio,
+      id_user: novoUsuario.id_user,
+    });
+
+    const tokenUsuario = await Token.create({
+      id_user: novoUsuario.id_user,
+      token: uuidv4(),
+    });
+
+    const progressStatus = await Progress.create({
+      perfil: 1,
+      logo_capa: 1,
+      imovel: 1,
+      publicacao: 1,
+      id_user: novoUsuario.id_user,
+    });
+
+    const qrData = "https://zonu.com.br/";
+    const qrCodeURL = await QRCode.toDataURL(qrData);
+
+    const novoQrcode = await Qrcode.create({
+      qrcode: qrCodeURL,
+      tipo: 2,
+      id_user: novoUsuario.id_user,
+    });
+
+    const response = {
+      mensagem: "Usuário cadastrado com sucesso",
+      usuarioCriado: {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        nivel: novoUsuario.id_nivel,
+        id_perfil: PerfilOriginario.id_perfil,
+        razao_social: PerfilOriginario.razao_social,
+        cnpj: PerfilOriginario.cnpj,
+        token_unico: tokenUsuario.token,
+        code: code.code,
       },
     };
 
@@ -1515,6 +1602,7 @@ module.exports = {
   atualizarUsuario,
   excluirUsuario,
   cadastrarUsuarioImobiliaria,
+  cadastrarSubUsuarioImobiliaria,
   cadastrarUsuarioVip,
   cadastrarUsuarioConstrutora,
   cadastrarUsuarioAdministrador,

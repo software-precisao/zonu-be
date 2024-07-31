@@ -29,8 +29,8 @@ const getAllControles = async (req, res) => {
 
 const getControleById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const controle = await Controle.findByPk(id, {
+    const { id_user } = req.params;
+    const controle = await Controle.findByPk(id_user, {
       include: [Usuario, Plano],
     });
     if (controle) {

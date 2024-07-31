@@ -3,11 +3,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/tb_usuarios");
 const Perfil = require("../models/tb_perfil");
+const SubPerfil = require("../models/tb_perfil_user_imobiliaria");
 const MyToken = require("../models/tb_token");
 const Qrcode = require("../models/tb_qrcode");
 const Controle = require("../models/tb_controle_teste");
 const UserStatus = require("../models/tb_user_status");
-
 
 const autenticarUsuario = async (req, res, next) => {
   try {
@@ -21,7 +21,10 @@ const autenticarUsuario = async (req, res, next) => {
       });
     }
 
-    const controle = await Controle.findOne({ where: { id_user: user.id_user } });
+    const isPasswordValid = await bcrypt.compare(senha, user.senha);
+    const controle = await Controle.findOne({
+      where: { id_user: user.id_user },
+    });
     if (controle) {
       const dataFimTeste = new Date(controle.data_inicio);
       dataFimTeste.setDate(dataFimTeste.getDate() + 7);
@@ -33,18 +36,20 @@ const autenticarUsuario = async (req, res, next) => {
       }
     }
 
-    const isPasswordValid = await bcrypt.compare(senha, user.senha);
-
     if (isPasswordValid) {
-      const userStatus = await UserStatus.findOne({ where: { id_user: user.id_user } });
+      const userStatus = await UserStatus.findOne({
+        where: { id_user: user.id_user },
+      });
       if (userStatus && userStatus.status === 1) {
         return res.status(403).send({
           mensagem: "Usuário já está logado em outro dispositivo.",
         });
       }
-
       const perfil = await Perfil.findOne({ where: { id_user: user.id_user } });
-      const mytoken = await MyToken.findOne({ where: { id_user: user.id_user } });
+      const subperfil = await SubPerfil.findOne({ where: { id_user: user.id_user } });
+      const mytoken = await MyToken.findOne({
+        where: { id_user: user.id_user },
+      });
       const qrcode = await Qrcode.findOne({ where: { id_user: user.id_user } });
       const token = jwt.sign(
         {
@@ -57,10 +62,10 @@ const autenticarUsuario = async (req, res, next) => {
           id_nivel: user.id_nivel,
           id_status: user.id_status,
           perfil: perfil,
+          subperfil: subperfil,
           token: mytoken,
           qrcode: qrcode,
-          initial: user.initial
-
+          initial: user.initial,
         },
         process.env.JWT_KEY,
         {
@@ -71,8 +76,10 @@ const autenticarUsuario = async (req, res, next) => {
       return res.status(200).send({
         mensagem: "Autenticado com sucesso!",
         token: token,
-        id_status: user.id_status
-
+        id_status: user.id_status,
+        initial: user.initial,
+        id_status: user.id_status,
+        id_nivel: user.id_nivel,
       });
     } else {
       return res.status(401).send({ mensagem: "Falha na autenticação." });
@@ -108,5 +115,5 @@ const logoutUsuario = async (req, res, next) => {
 
 module.exports = {
   autenticarUsuario,
-  logoutUsuario
+  logoutUsuario,
 };
