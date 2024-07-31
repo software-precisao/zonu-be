@@ -58,7 +58,8 @@ const autenticarUsuario = async (req, res, next) => {
           id_status: user.id_status,
           perfil: perfil,
           token: mytoken,
-          qrcode: qrcode
+          qrcode: qrcode,
+          initial: user.initial
 
         },
         process.env.JWT_KEY,

@@ -65,6 +65,7 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
       id_plano: req.body.id_plano,
       id_status: 2,
       id_nivel: 3,
+      initial: 2,
     });
 
     const novoperfil = await Perfil.create({
@@ -229,6 +230,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       id_plano: 3,
       id_status: 2,
       id_nivel: 4,
+      initial: 1,
     });
 
     const novoperfil = await Perfil.create({
@@ -382,6 +384,7 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
       id_plano: req.body.id_plano,
       id_status: 2,
       id_nivel: 5,
+      initial: 1,
     });
 
     const novoperfil = await Perfil.create({
@@ -448,10 +451,28 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
 
+    const token = jwt.sign(
+      {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        sobrenome: novoUsuario.sobrenome,
+        email: novoUsuario.email,
+        avatar: novoUsuario.avatar,
+        id_plano: novoUsuario.id_plano,
+        id_nivel: novoUsuario.id_nivel,
+        id_status: novoUsuario.id_status,
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "6h",
+      }
+    );
+
+
     htmlContent = htmlContent
       .replace("{{nome}}", novoUsuario.nome)
       .replace("{{email}}", novoUsuario.email)
-      .replace("{{idUser}}", novoUsuario.id_user);
+      .replace("{{idUser}}", token);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -522,6 +543,7 @@ const cadastrarUsuarioAdministrador = async (req, res, next) => {
       avatar: `/avatar/${filename}`,
       id_status: 1,
       id_nivel: 1,
+      initial: 1,
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -648,6 +670,7 @@ const cadastrarEquipeZonu = async (req, res, next) => {
       id_status: req.body.status,
       id_nivel: 2,
       id_plano: req.body.id_plano,
+      initial: 1,
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -776,6 +799,7 @@ const cadastrarUsuarioVip = async (req, res, next) => {
       id_status: req.body.status,
       id_nivel: req.body.id_nivel,
       id_plano: req.body.id_plano,
+      initial: 1,
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -895,7 +919,7 @@ const atualizarCreci = async (req, res, next) => {
       });
     }
 
-    const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
+    const filenameCreci = req.files && req.files['creci'] ? req.files['creci'][0].filename : 'default-creci.pdf';
 
     const perfil = await Perfil.findOne({ where: { id_user: id_user } });
    
@@ -967,7 +991,7 @@ const atualizarDocCnpj = async (req, res, next) => {
       });
     }
 
-    const filenameCnpj = req.file ? req.file.filename : "default-cnpj.pdf";
+    const filenameCnpj = req.files && req.files['doc_cnpj'] ? req.files['doc_cnpj'][0].filename : 'default-cnpj.pdf';
 
     const perfil = await Perfil.findOne({ where: { id_user: id_user } });
    
