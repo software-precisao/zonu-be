@@ -32,6 +32,7 @@ const rotaPayment = require("./routes/payments");
 const rotaLead = require("./routes/lead");
 const rotaLinkTemporario = require("./routes/linksTemporarios");
 const rotaPeriodoTeste = require("./routes/periodoTeste");
+const rotaMensagens = require("./routes/messages")
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -157,6 +158,8 @@ app.use("/lead", rotaLead);
 app.use("/pay", rotaPayment);
 app.use("/linktemporario", rotaLinkTemporario);
 app.use("/periodo-teste", rotaPeriodoTeste);
+app.use("/mensagem", rotaMensagens);
+
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
