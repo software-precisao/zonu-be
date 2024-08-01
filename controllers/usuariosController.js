@@ -22,13 +22,12 @@ const path = require("path");
 const fs = require("fs").promises;
 require("dotenv").config();
 
-const axios = require('axios');
+const axios = require("axios");
 
 const TokenPayment = require("../models/tb_token_payment");
 
 const geoip = require("geoip-lite");
 const moment = require("moment");
-
 
 //POST de usuários
 
@@ -274,7 +273,6 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-
     const token = jwt.sign(
       {
         id_user: novoUsuario.id_user,
@@ -385,7 +383,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     });
 
     const novoperfil = await Perfil.create({
-
       razao_social: req.body.razao_social,
       cnpj: req.body.cnpj,
       telefone: req.body.telefone,
@@ -447,7 +444,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-
     const token = jwt.sign(
       {
         id_user: novoUsuario.id_user,
@@ -464,7 +460,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
         expiresIn: "6h",
       }
     );
-
 
     htmlContent = htmlContent
       .replace("{{nome}}", novoUsuario.nome)
@@ -521,7 +516,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
 
 const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
-   
     const usuarioExistente = await User.findOne({
       where: { email: req.body.email },
     });
@@ -551,11 +545,9 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     });
 
     const novoperfil = await PerfilUser.create({
-
       id_perfil: PerfilOriginario.id_perfil,
       id_user: novoUsuario.id_user,
     });
-
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -605,6 +597,27 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     return res.status(202).send(response);
   } catch (error) {
     console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+const getSubUsuariosImobiliaria = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const perfisImobiliaria = await PerfilUser.findAll({
+      where: { id_perfil: id_user },
+    });
+
+    if (perfisImobiliaria.length === 0) {
+      return res.status(404).send({ mensagem: 'Nenhum usuário encontrado para a imobiliária.' });
+    }
+    const idsUsuarios = perfisImobiliaria.map(perfil => perfil.id_user);
+    const usuarios = await Usuario.findAll({
+      where: { id_user: idsUsuarios },
+    });
+    return res.status(200).send(usuarios);
+  } catch (error) {
+    console.error(error);
     return res.status(500).send({ error: error.message });
   }
 };
@@ -720,6 +733,7 @@ const cadastrarUsuarioAdministrador = async (req, res, next) => {
         email: novoUsuario.email,
         nivel: novoUsuario.id_nivel,
         token_unico: tokenUsuario.token,
+        progressao: progressStatus.perfil,
         code: code.code,
         request: {
           tipo: "GET",
@@ -929,46 +943,44 @@ const cadastrarUsuarioVip = async (req, res, next) => {
     const currentDate = moment().format("DD/MM/YYYY");
     const currentTime = moment().format("HH:mm:ss");
 
+    const htmlFilePath = path.join(
+      __dirname,
+      "../template/boasvindas/suporte.html"
+    );
+    let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-      const htmlFilePath = path.join(
-        __dirname,
-        "../template/boasvindas/suporte.html"
-      );
-      let htmlContent = await fs.readFile(htmlFilePath, "utf8");
+    htmlContent = htmlContent
+      .replace("{{nome}}", novoUsuario.nome)
+      .replace("{{email}}", novoUsuario.email)
+      .replace("{{localizacao}}", location)
+      .replace("{{enderecoIp}}", userIp)
+      .replace("{{data}}", currentDate)
+      .replace("{{hora}}", currentTime);
 
-      htmlContent = htmlContent
-        .replace("{{nome}}", novoUsuario.nome)
-        .replace("{{email}}", novoUsuario.email)
-        .replace("{{localizacao}}", location)
-        .replace("{{enderecoIp}}", userIp)
-        .replace("{{data}}", currentDate)
-        .replace("{{hora}}", currentTime);
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        ciphers: "TLSv1",
+      },
+    });
 
-      const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-          ciphers: "TLSv1",
-        },
-      });
+    let email = novoUsuario.email;
 
-      let email = novoUsuario.email;
+    let mailOptions = {
+      from: `"Atendimento Zonu" ${process.env.EMAIL_FROM}`,
+      to: email,
+      subject: "⭐ Convite VIP - Zonu",
+      html: htmlContent,
+    };
 
-      let mailOptions = {
-        from: `"Atendimento Zonu" ${process.env.EMAIL_FROM}`,
-        to: email,
-        subject: "⭐ Convite VIP - Zonu",
-        html: htmlContent,
-      };
-
-      let info = await transporter.sendMail(mailOptions);
-      console.log("Mensagem enviada ao suporte", info.messageId);
-    
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Mensagem enviada ao suporte", info.messageId);
 
     const response = {
       mensagem: "Usuário cadastrado com sucesso",
@@ -1006,10 +1018,12 @@ const atualizarCreci = async (req, res, next) => {
       });
     }
 
-    const filenameCreci = req.files && req.files['creci'] ? req.files['creci'][0].filename : 'default-creci.pdf';
+    const filenameCreci =
+      req.files && req.files["creci"]
+        ? req.files["creci"][0].filename
+        : "default-creci.pdf";
 
     const perfil = await Perfil.findOne({ where: { id_user: id_user } });
-   
 
     if (!perfil) {
       return res.status(404).send({
@@ -1026,10 +1040,9 @@ const atualizarCreci = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-
     htmlContent = htmlContent
       .replace("{{nome}}", usuario.nome)
-      .replace("{{email}}", usuario.email)
+      .replace("{{email}}", usuario.email);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -1074,14 +1087,16 @@ const atualizarDocCnpj = async (req, res, next) => {
 
     if (!usuario) {
       return res.status(404).send({
-        mensagem: "Usuário não encontrado.",
+        mensagem: "Usuário não encontradoo.",
       });
     }
 
-    const filenameCnpj = req.files && req.files['doc_cnpj'] ? req.files['doc_cnpj'][0].filename : 'default-cnpj.pdf';
+    const filenameCnpj =
+      req.files && req.files["doc_cnpj"]
+        ? req.files["doc_cnpj"][0].filename
+        : "default-cnpj.pdf";
 
     const perfil = await Perfil.findOne({ where: { id_user: id_user } });
-   
 
     if (!perfil) {
       return res.status(404).send({
@@ -1098,10 +1113,9 @@ const atualizarDocCnpj = async (req, res, next) => {
     );
     let htmlContent = await fs.readFile(htmlFilePath, "utf8");
 
-
     htmlContent = htmlContent
       .replace("{{nome}}", usuario.nome)
-      .replace("{{email}}", usuario.email)
+      .replace("{{email}}", usuario.email);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -1138,7 +1152,6 @@ const atualizarDocCnpj = async (req, res, next) => {
   }
 };
 
-
 const editarUsuarioSimples = async (req, res, next) => {
   try {
     const { id_user } = req.params;
@@ -1146,7 +1159,7 @@ const editarUsuarioSimples = async (req, res, next) => {
     const usuarioExistente = await User.findByPk(id_user);
     if (!usuarioExistente) {
       return res.status(404).send({
-        mensagem: "Usuário não encontrado",
+        mensagem: "Usuário não encontradoo",
       });
     }
 
@@ -1203,7 +1216,7 @@ const editarCliente = async (req, res, next) => {
     const usuarioExistente = await User.findByPk(id_user);
     if (!usuarioExistente) {
       return res.status(404).send({
-        mensagem: "Usuário não encontrado",
+        mensagem: "Usuário não encontradoo",
       });
     }
 
@@ -1294,7 +1307,6 @@ const editarCliente = async (req, res, next) => {
   }
 };
 
-
 const obterUsuarios = async (req, res, next) => {
   try {
     const usuarios = await User.findAll({
@@ -1316,7 +1328,7 @@ const obterUsuarioPorId = async (req, res, next) => {
   try {
     const usuario = await User.findByPk(req.params.id_user);
     if (!usuario) {
-      return res.status(404).send({ message: "Usuário não encontrado" });
+      return res.status(404).send({ message: "Usuário não encontradooooo" });
     }
     return res.status(200).send({ response: usuario });
   } catch (error) {
@@ -1612,4 +1624,5 @@ module.exports = {
   atualizarDadosUsuario,
   editarUsuarioSimples,
   editarCliente,
+  getSubUsuariosImobiliaria,
 };

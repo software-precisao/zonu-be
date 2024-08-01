@@ -5,6 +5,7 @@ const { uploadFields } = require("../helpers/file-uploader");
 
 router.get("/", userController.obterUsuarios);
 router.get("/:id_user", userController.obterUsuarioPorId);
+router.get("/users-imobiliaria/:id_user", userController.getSubUsuariosImobiliaria);
 router.patch("/status/", userController.atualizarStatusUsuario);
 router.patch("/edit", userController.atualizarUsuario);
 router.put("/dados/:id_user", userController.trocaSenha);
@@ -13,6 +14,7 @@ router.patch('/editar/', userController.atualizarDadosUsuario);
 router.post('/verifica-email', userController.obterUsuarioPorEmail);
 router.put('/edit/trocar-senha', userController.trocaSenhaporEmail);
 router.post('/valida-code', userController.validaCode);
+
 
 
 //Cadastro de usuários
