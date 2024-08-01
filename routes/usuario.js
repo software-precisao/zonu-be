@@ -16,7 +16,6 @@ router.put('/edit/trocar-senha', userController.trocaSenhaporEmail);
 router.post('/valida-code', userController.validaCode);
 
 
-
 //Cadastro de usuários
 router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioAdministrador);
 router.post("/cadastro-construtora", uploadFields, userController.cadastrarUsuarioConstrutora);

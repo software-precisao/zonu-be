@@ -28,6 +28,7 @@ const TokenPayment = require("../models/tb_token_payment");
 
 const geoip = require("geoip-lite");
 const moment = require("moment");
+const sequelize = require("../data/conn");
 
 //POST de usuários
 
@@ -519,6 +520,7 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     const usuarioExistente = await User.findOne({
       where: { email: req.body.email },
     });
+
     if (usuarioExistente) {
       return res.status(409).send({
         mensagem: "Email já cadastrado, por favor insira um email diferente!",
@@ -543,6 +545,12 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     const PerfilOriginario = await Perfil.findOne({
       where: { id_user: req.body.id_user },
     });
+
+    if (!PerfilOriginario) {
+      return res
+        .status(404)
+        .send({ mensagem: "Perfil da imobiliária pai não encontrado." });
+    }
 
     const novoperfil = await PerfilUser.create({
       id_perfil: PerfilOriginario.id_perfil,
@@ -604,17 +612,23 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
 const getSubUsuariosImobiliaria = async (req, res) => {
   try {
     const { id_user } = req.params;
-    const perfisImobiliaria = await PerfilUser.findAll({
+
+    const perfisImobiliaria = await PerfilUser.findOne({
       where: { id_perfil: id_user },
     });
 
-    if (perfisImobiliaria.length === 0) {
-      return res.status(404).send({ mensagem: 'Nenhum usuário encontrado para a imobiliária.' });
+    if (!perfisImobiliaria) {
+      return res
+        .status(404)
+        .send({ mensagem: "Nenhum usuário encontrado para a imobiliária" });
     }
-    const idsUsuarios = perfisImobiliaria.map(perfil => perfil.id_user);
-    const usuarios = await Usuario.findAll({
-      where: { id_user: idsUsuarios },
-    });
+
+    const [usuarios] = await sequelize.query(`
+      SELECT * FROM tb_usuario WHERE id_user IN (
+        SELECT id_user FROM \`tb_perfil_user_imobiliaria\` WHERE id_perfil = ${id_user}
+      );
+    `)
+
     return res.status(200).send(usuarios);
   } catch (error) {
     console.error(error);
