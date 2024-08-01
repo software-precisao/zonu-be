@@ -609,33 +609,6 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   }
 };
 
-const getSubUsuariosImobiliaria = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-
-    const perfisImobiliaria = await PerfilUser.findOne({
-      where: { id_perfil: id_user },
-    });
-
-    if (!perfisImobiliaria) {
-      return res
-        .status(404)
-        .send({ mensagem: "Nenhum usuário encontrado para a imobiliária" });
-    }
-
-    const [usuarios] = await sequelize.query(`
-      SELECT * FROM tb_usuario WHERE id_user IN (
-        SELECT id_user FROM \`tb_perfil_user_imobiliaria\` WHERE id_perfil = ${id_user}
-      );
-    `)
-
-    return res.status(200).send(usuarios);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({ error: error.message });
-  }
-};
-
 const cadastrarUsuarioAdministrador = async (req, res, next) => {
   try {
     const filename = req.file ? req.file.filename : "default-avatar.png";
@@ -1638,5 +1611,4 @@ module.exports = {
   atualizarDadosUsuario,
   editarUsuarioSimples,
   editarCliente,
-  getSubUsuariosImobiliaria,
 };
