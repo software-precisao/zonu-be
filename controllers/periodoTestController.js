@@ -30,16 +30,22 @@ const getAllControles = async (req, res) => {
 const getControleById = async (req, res) => {
   try {
     const { id_user } = req.params;
-    const controle = await Controle.findByPk(id_user, {
+    console.log("ID do Usuário:", id_user); 
+
+    const controle = await Controle.findOne({
+      where: { id_user: id_user },
       include: [Usuario, Plano],
     });
+
     if (controle) {
+      console.log("Controle encontrado:", controle); 
       res.status(200).json(controle);
     } else {
+      console.log("Controle não encontrado para o ID:", id_user); 
       res.status(404).json({ error: 'Controle não encontrado' });
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao buscar controle:", error); 
     res.status(500).json({ error: 'Erro ao buscar controle' });
   }
 };
