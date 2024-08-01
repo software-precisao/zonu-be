@@ -601,27 +601,6 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   }
 };
 
-const getSubUsuariosImobiliaria = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-    const perfisImobiliaria = await PerfilUser.findAll({
-      where: { id_perfil: id_user },
-    });
-
-    if (perfisImobiliaria.length === 0) {
-      return res.status(404).send({ mensagem: 'Nenhum usuário encontrado para a imobiliária.' });
-    }
-    const idsUsuarios = perfisImobiliaria.map(perfil => perfil.id_user);
-    const usuarios = await Usuario.findAll({
-      where: { id_user: idsUsuarios },
-    });
-    return res.status(200).send(usuarios);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({ error: error.message });
-  }
-};
-
 const cadastrarUsuarioAdministrador = async (req, res, next) => {
   try {
     const filename = req.file ? req.file.filename : "default-avatar.png";
@@ -1624,5 +1603,4 @@ module.exports = {
   atualizarDadosUsuario,
   editarUsuarioSimples,
   editarCliente,
-  getSubUsuariosImobiliaria,
 };
