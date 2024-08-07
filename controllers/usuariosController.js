@@ -178,6 +178,172 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
   }
 };
 
+const cadastrarPessoaFisica = async (req, res, next) => {
+  try {
+    const perfilExistente = await Perfil.findOne({
+      where: { cpf: req.body.cpf },
+    });
+    if (perfilExistente) {
+      return res.status(409).send({
+        mensagem: "CPF já cadastrado, por favor insira um CPF diferente!",
+      });
+    }
+
+    const usuarioExistente = await User.findOne({
+      where: { email: req.body.email },
+    });
+    if (usuarioExistente) {
+      return res.status(409).send({
+        mensagem: "Email já cadastrado, por favor insira um email diferente!",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.senha, 10);
+    const filename = req.file ? req.file.filename : "default-avatar.png";
+    const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
+    const filenameLogo = req.file ? req.file.filename : "default-logo.png";
+
+    const novoUsuario = await User.create({
+      nome: req.body.nome,
+      sobrenome: req.body.sobrenome,
+      email: req.body.email,
+      senha: hashedPassword,
+      avatar: `/avatar/${filename}`,
+      id_plano: req.body.id_plano,
+      id_status: 2,
+      id_nivel: 7,
+      initial: 1,
+    });
+
+    const novoperfil = await Perfil.create({
+      cpf: req.body.cpf,
+      telefone: req.body.telefone,
+      cep: req.body.cep,
+      creci: `/documento/${filenameCreci}`,
+      logo: `/logo/${filenameLogo}`,
+      endereco: req.body.endereco,
+      termos: "S",
+      numero: req.body.numero,
+      complemento: req.body.complemento,
+      cidade: req.body.cidade,
+      estado: req.body.estado,
+      bairro: req.body.bairro,
+      id_user: novoUsuario.id_user,
+    });
+
+    const novoTeste = await ControleTeste.create({
+      data_inicio: format(new Date(), "yyyy-MM-dd"),
+      status: 1,
+      id_plano: novoUsuario.id_plano,
+      id_user: novoUsuario.id_user,
+    });
+
+    const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const code = await Code.create({
+      type_code: 1,
+      code: codigoAleatorio,
+      id_user: novoUsuario.id_user,
+    });
+
+    const tokenUsuario = await Token.create({
+      id_user: novoUsuario.id_user,
+      token: uuidv4(),
+    });
+
+    const progressStatus = await Progress.create({
+      perfil: 1,
+      logo_capa: 1,
+      imovel: 1,
+      publicacao: 1,
+      id_user: novoUsuario.id_user,
+    });
+
+    const qrData = "https://zonu.com.br/";
+    const qrCodeURL = await QRCode.toDataURL(qrData);
+
+    const novoQrcode = await Qrcode.create({
+      qrcode: qrCodeURL,
+      tipo: 2,
+      id_user: novoUsuario.id_user,
+    });
+
+    const htmlFilePath = path.join(
+      __dirname,
+      "../template/aviso/corretor.html"
+    );
+    let htmlContent = await fs.readFile(htmlFilePath, "utf8");
+
+    const token = jwt.sign(
+      {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        sobrenome: novoUsuario.sobrenome,
+        email: novoUsuario.email,
+        avatar: novoUsuario.avatar,
+        id_plano: novoUsuario.id_plano,
+        id_nivel: novoUsuario.id_nivel,
+        id_status: novoUsuario.id_status,
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "6h",
+      }
+    );
+
+    htmlContent = htmlContent
+      .replace("{{nome}}", novoUsuario.nome)
+      .replace("{{email}}", novoUsuario.email)
+      .replace("{{idUser}}", token);
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        ciphers: "TLSv1",
+      },
+    });
+
+    let email = novoUsuario.email;
+
+    let mailOptions = {
+      from: `"Atendimento Zonu" ${process.env.EMAIL_FROM}`,
+      to: email,
+      subject: "✅ Conta criada com sucesso!",
+      html: htmlContent,
+    };
+
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Mensagem enviada: %s", info.messageId);
+
+    const response = {
+      mensagem: "Usuário cadastrado com sucesso",
+      usuarioCriado: {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        nivel: novoUsuario.id_nivel,
+        id_perfil: novoperfil.id_perfil,
+        razao_social: novoperfil.razao_social,
+        cnpj: novoperfil.cnpj,
+        token_unico: tokenUsuario.token,
+        code: code.code,
+        periodo: novoTeste.id_controle,
+      },
+    };
+
+    return res.status(202).send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
 const cadastrarUsuarioCorretor = async (req, res, next) => {
   try {
     const perfilExistente = await Perfil.findOne({
@@ -1611,4 +1777,5 @@ module.exports = {
   atualizarDadosUsuario,
   editarUsuarioSimples,
   editarCliente,
+  cadastrarPessoaFisica
 };

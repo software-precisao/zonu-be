@@ -23,6 +23,7 @@ router.post("/cadastro-imobiliaria-user", uploadFields, userController.cadastrar
 router.post("/cadastro-corretor", uploadFields, userController.cadastrarUsuarioCorretor);
 router.post("/cadastro-vip", uploadFields, userController.cadastrarUsuarioVip);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);
+router.post("/cadastro-pessoa-fisica", uploadFields, userController.cadastrarPessoaFisica)
 
 //Envio de documentos
 router.put("/enviodoc-creci/:id_user", uploadFields, userController.atualizarCreci);
