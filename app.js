@@ -38,6 +38,7 @@ const rotaNiveisInteresse = require("./routes/niveisInteresse")
 const rotaPosicao = require("./routes/posicao")
 const rotaCategoriaCliente = require("./routes/categoriaCliente")
 const rotaCaptacao = require("./routes/captacao")
+const rotaTipoCliente = require("./routes/tipoCliente")
 
 
 const Code = require("./models/tb_code");
@@ -170,9 +171,7 @@ app.use("/niveisInteresse", rotaNiveisInteresse)
 app.use("/posicao", rotaPosicao)
 app.use("/categoriaCliente", rotaCategoriaCliente)
 app.use("/captacao", rotaCaptacao)
-
-
-
+app.use("/tipoCliente", rotaTipoCliente)
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
