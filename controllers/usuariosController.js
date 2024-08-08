@@ -29,6 +29,7 @@ const TokenPayment = require("../models/tb_token_payment");
 const geoip = require("geoip-lite");
 const moment = require("moment");
 const sequelize = require("../data/conn");
+const Controle = require("../models/tb_controle_teste");
 
 //POST de usuários
 
@@ -1481,7 +1482,7 @@ const obterUsuarioPorId = async (req, res, next) => {
   try {
     const usuario = await User.findByPk(req.params.id_user);
     if (!usuario) {
-      return res.status(404).send({ message: "Usuário não encontradooooo" });
+      return res.status(404).send({ message: "Usuário não encontrado" });
     }
     return res.status(200).send({ response: usuario });
   } catch (error) {
@@ -1721,7 +1722,6 @@ const trocaSenhaporEmail = async (req, res, next) => {
     let info = await transporter.sendMail(mailOptions);
     console.log("Mensagem enviada: %s", info.messageId);
 
-    // Salva as alterações no usuário
     await usuario.save();
 
     return res.status(200).send({ mensagem: "Senha alterada com sucesso!" });
@@ -1742,7 +1742,8 @@ const excluirUsuario = async (req, res, next) => {
     await Imovel.destroy({ where: { id_user } });
     await Condominio.destroy({ where: { id_user } });
 
-    // Depois, tenta deletar o usuário
+    await Controle.destroy({ where: { id_user } });
+
     const usuario = await User.findByPk(id_user);
     if (!usuario) {
       return res.status(404).send({ message: "Usuário não encontrado" });
