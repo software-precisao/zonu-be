@@ -1,6 +1,5 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
-const Cliente = require("./tb_clientes");
 
 const Posicao = conn.define(
   "tb_posicao",
