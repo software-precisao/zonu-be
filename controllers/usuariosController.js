@@ -30,6 +30,7 @@ const geoip = require("geoip-lite");
 const moment = require("moment");
 const sequelize = require("../data/conn");
 const Controle = require("../models/tb_controle_teste");
+const LinkTemporario = require("../models/tb_links_temporarios");
 
 //POST de usuários
 
@@ -1743,6 +1744,7 @@ const excluirUsuario = async (req, res, next) => {
     await Condominio.destroy({ where: { id_user } });
 
     await Controle.destroy({ where: { id_user } });
+    await LinkTemporario.destroy({ where: { id_user } });
 
     const usuario = await User.findByPk(id_user);
     if (!usuario) {
