@@ -34,6 +34,7 @@ const rotaLinkTemporario = require("./routes/linksTemporarios");
 const rotaPeriodoTeste = require("./routes/periodoTeste");
 const rotaMensagens = require("./routes/messages")
 const rotaVideos = require('./routes/videosYoutube')
+const rotaNiveisInteresse = require("./routes/niveisInteresse")
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -161,6 +162,7 @@ app.use("/linktemporario", rotaLinkTemporario);
 app.use("/periodo-teste", rotaPeriodoTeste);
 app.use("/mensagem", rotaMensagens);
 app.use("/videos", rotaVideos)
+app.use("/niveisInteresse", rotaNiveisInteresse)
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
