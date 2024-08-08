@@ -37,6 +37,8 @@ const rotaVideos = require('./routes/videosYoutube')
 const rotaNiveisInteresse = require("./routes/niveisInteresse")
 const rotaPosicao = require("./routes/posicao")
 const rotaCategoriaCliente = require("./routes/categoriaCliente")
+const rotaCaptacao = require("./routes/captacao")
+
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -167,6 +169,8 @@ app.use("/videos", rotaVideos)
 app.use("/niveisInteresse", rotaNiveisInteresse)
 app.use("/posicao", rotaPosicao)
 app.use("/categoriaCliente", rotaCategoriaCliente)
+app.use("/captacao", rotaCaptacao)
+
 
 
 
