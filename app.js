@@ -35,6 +35,7 @@ const rotaPeriodoTeste = require("./routes/periodoTeste");
 const rotaMensagens = require("./routes/messages")
 const rotaVideos = require('./routes/videosYoutube')
 const rotaNiveisInteresse = require("./routes/niveisInteresse")
+const rotaPosicao = require("./routes/posicao")
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -163,6 +164,8 @@ app.use("/periodo-teste", rotaPeriodoTeste);
 app.use("/mensagem", rotaMensagens);
 app.use("/videos", rotaVideos)
 app.use("/niveisInteresse", rotaNiveisInteresse)
+app.use("/posicao", rotaPosicao)
+
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
