@@ -79,14 +79,13 @@ const criarImovel = async (req, res) => {
       valor_metro_quadrado: req.body.valor_metro_quadrado,
     });
 
-
     const precoImovel = parseFloat(tabPreco.preco_imovel);
     const areaTotal = parseFloat(req.body.area_total);
     const mediaMetroQuadrado = (precoImovel / areaTotal).toFixed(2);
 
     const tabMedidas = await Medidas.create({
-      area_contruida: parseFloat(req.body.area_contruida.replace(',', '.')),
-      area_privativa: parseFloat(req.body.area_privativa.replace(',', '.')),
+      area_contruida: parseFloat(req.body.area_contruida.replace(",", ".")),
+      area_privativa: parseFloat(req.body.area_privativa.replace(",", ".")),
       area_total: areaTotal,
       media_metro_quadrado: mediaMetroQuadrado,
     });
@@ -420,7 +419,20 @@ const editarImovel = async (req, res) => {
         .send({ mensagem: "Formato inválido para caracteristicas" });
     }
     if (Array.isArray(caracteristicas)) {
+      const validCaracteristicas = await Caracteristica.findAll({
+        where: {
+          id_caracteristica: caracteristicas,
+        },
+      });
+
+      if (validCaracteristicas.length !== caracteristicas.length) {
+        return res
+          .status(400)
+          .send({ mensagem: "Uma ou mais características são inválidas" });
+      }
+
       await Caracteristicas.destroy({ where: { id_imovel: id_imovel } });
+
       await Promise.all(
         caracteristicas.map((item) =>
           Caracteristicas.create({
@@ -441,7 +453,20 @@ const editarImovel = async (req, res) => {
         .send({ mensagem: "Formato inválido para proximidades" });
     }
     if (Array.isArray(proximidades)) {
+      const validProximidades = await Proximidade.findAll({
+        where: {
+          id_proximidades: proximidades,
+        },
+      });
+
+      if (validProximidades.length !== proximidades.length) {
+        return res
+          .status(400)
+          .send({ mensagem: "Uma ou mais proximidades são inválidas" });
+      }
+
       await Proximidades.destroy({ where: { id_imovel: id_imovel } });
+
       await Promise.all(
         proximidades.map((dado) =>
           Proximidades.create({
@@ -666,5 +691,5 @@ module.exports = {
   obterImovelCompletoIdUser,
   excluirImovel,
   obterBairro,
-  editarImovel
+  editarImovel,
 };
