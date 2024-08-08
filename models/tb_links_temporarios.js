@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const conn = require('../data/conn');
+const Usuario = require('./tb_usuarios');
 
 const LinkTemporario = conn.define('tb_link_temporario', {
   id: {
@@ -7,7 +8,7 @@ const LinkTemporario = conn.define('tb_link_temporario', {
     autoIncrement: true,
     primaryKey: true,
   },
-  userId: {
+  id_user: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -34,8 +35,8 @@ const LinkTemporario = conn.define('tb_link_temporario', {
   },
 }, { freezeTableName: true });
 
-LinkTemporario.belongsTo(require('../models/tb_usuarios'), {
-  foreignKey: 'userId',
+LinkTemporario.belongsTo(Usuario, {
+  foreignKey: 'id_user',
   as: 'usuario', 
 });
 

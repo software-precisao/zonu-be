@@ -4,9 +4,9 @@ const LinkTemporario = require("../models/tb_links_temporarios");
 
 const criarLinkTemporario = async (req, res, next) => {
   try {
-    const { userId, url } = req.body;
+    const { id_user, url } = req.body;
 
-    if (!userId || !url) {
+    if (!id_user || !url) {
       return res
         .status(400)
         .send({ error: "ID do usuário e URL são obrigatórios" });
@@ -16,7 +16,7 @@ const criarLinkTemporario = async (req, res, next) => {
     const dataExpiracao = new Date(dataCriacao.getTime() + 24 * 60 * 60 * 1000);
 
     const link = await LinkTemporario.create({
-      userId,
+      id_user,
       url,
       dataCriacao,
       dataExpiracao,
@@ -34,10 +34,10 @@ const criarLinkTemporario = async (req, res, next) => {
 
 const listarLinksTemporarios = async (req, res, next) => {
   try {
-    const { userId } = req.params;
+    const { id_user } = req.params;
 
     const links = await LinkTemporario.findAll({
-      where: { userId },
+      where: { id_user },
     });
 
     const linksAtualizados = links.map((link) => {
