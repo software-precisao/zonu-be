@@ -40,6 +40,8 @@ const rotaCategoriaCliente = require("./routes/categoriaCliente")
 const rotaCaptacao = require("./routes/captacao")
 const rotaTipoCliente = require("./routes/tipoCliente")
 const rotaClientes = require("./routes/clientes")
+const rotaNegocios = require("./routes/negocios")
+
 
 
 
@@ -175,7 +177,7 @@ app.use("/categoriaCliente", rotaCategoriaCliente)
 app.use("/captacao", rotaCaptacao)
 app.use("/tipoCliente", rotaTipoCliente)
 app.use("/clientes", rotaClientes)
-
+app.use("/negocios", rotaNegocios)
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
