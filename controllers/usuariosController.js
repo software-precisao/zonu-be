@@ -170,7 +170,7 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
       },
-      asaasResponse: response.data,
+      // asaasResponse: response.data,
     };
 
     return res.status(202).send(response);
