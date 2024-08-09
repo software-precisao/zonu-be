@@ -34,6 +34,7 @@ const Cliente = conn.define("tb_clientes", {
   email: {
     type: DataTypes.STRING,
     allowNull: true,
+    unique: true,
     validate: {
       isEmail: true,
     },
