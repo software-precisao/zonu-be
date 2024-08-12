@@ -21,11 +21,6 @@ const Etapa = conn.define(
     descricao: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    data_criacao: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.NOW,
     }
   },
   { freezeTableName: true }
