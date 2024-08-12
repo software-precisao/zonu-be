@@ -41,8 +41,8 @@ const rotaCaptacao = require("./routes/captacao")
 const rotaTipoCliente = require("./routes/tipoCliente")
 const rotaClientes = require("./routes/clientes")
 const rotaNegocios = require("./routes/negocios")
-
-
+const rotaEtapa = require("./routes/etapa")
+const rotaFunil = require("./routes/funil")
 
 
 const Code = require("./models/tb_code");
@@ -178,6 +178,8 @@ app.use("/captacao", rotaCaptacao)
 app.use("/tipoCliente", rotaTipoCliente)
 app.use("/clientes", rotaClientes)
 app.use("/negocios", rotaNegocios)
+app.use("/etapa", rotaEtapa)
+app.use("/funil", rotaFunil)
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
