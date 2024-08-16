@@ -13,7 +13,7 @@ const Cliente = conn.define("tb_clientes", {
   },
   id_tipo_cliente: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   id_captacao: {
     type: DataTypes.INTEGER,
@@ -31,13 +31,14 @@ const Cliente = conn.define("tb_clientes", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  cpf: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: true,
     unique: true,
-    validate: {
-      isEmail: true,
-    },
   },
   data_de_nascimento: {
     type: DataTypes.DATEONLY,
