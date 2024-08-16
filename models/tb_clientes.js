@@ -41,7 +41,7 @@ const Cliente = conn.define("tb_clientes", {
     unique: true,
   },
   data_de_nascimento: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.STRING,
     allowNull: true,
   },
   profissao: {
@@ -73,7 +73,7 @@ const Cliente = conn.define("tb_clientes", {
     allowNull: true,
   },
   numero: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: true,
   },
   complemento: {
