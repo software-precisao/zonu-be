@@ -2,34 +2,39 @@ const Cliente = require("../models/tb_clientes");
 const TipoCliente = require("../models/tb_tipo_cliente");
 const Captacao = require("../models/tb_captacao");
 const CategoriaCliente = require("../models/tb_categoria_cliente");
+const Usuario = require("../models/tb_usuarios");
 
 const getClientes = async (req, res) => {
-    try {
-      const clientes = await Cliente.findAll({
-        include: [
-          {
-            model: TipoCliente,
-            as: "TipoCliente",
-            attributes: ['tipo_cliente'] 
-          },
-          {
-            model: Captacao,
-            as: "Captacao",
-            attributes: ['origem_captacao'] 
-          },
-          {
-            model: CategoriaCliente,
-            as: "CategoriaCliente",
-            attributes: ['categoria_cliente'] 
-          },
-        ],
-      });
-      return res.status(200).json(clientes);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  };
-  
+  try {
+    const clientes = await Cliente.findAll({
+      include: [
+        {
+          model: TipoCliente,
+          as: "TipoCliente",
+          attributes: ["tipo_cliente"],
+        },
+        {
+          model: Captacao,
+          as: "Captacao",
+          attributes: ["origem_captacao"],
+        },
+        {
+          model: CategoriaCliente,
+          as: "CategoriaCliente",
+          attributes: ["categoria_cliente"],
+        },
+        {
+          model: Usuario,
+          as: "Usuario",
+          attributes: ["nome"],
+        },
+      ],
+    });
+    return res.status(200).json(clientes);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 const createCliente = async (req, res) => {
   try {
@@ -37,6 +42,7 @@ const createCliente = async (req, res) => {
       id_tipo_cliente,
       id_captacao,
       id_categoria_cliente,
+      id_user,
       nome,
       rg,
       cpf,
@@ -51,6 +57,8 @@ const createCliente = async (req, res) => {
       logradouro,
       numero,
       complemento,
+      telefone_1,
+      telefone_2,
       anotacao,
     } = req.body;
 
@@ -58,6 +66,7 @@ const createCliente = async (req, res) => {
       id_tipo_cliente,
       id_captacao,
       id_categoria_cliente,
+      id_user,
       nome,
       rg,
       cpf,
@@ -72,6 +81,8 @@ const createCliente = async (req, res) => {
       logradouro,
       numero,
       complemento,
+      telefone_1,
+      telefone_2,
       anotacao,
     });
     return res.status(201).json(novoCliente);
@@ -87,6 +98,7 @@ const updateCliente = async (req, res) => {
       id_tipo_cliente,
       id_captacao,
       id_categoria_cliente,
+      id_user,
       nome,
       rg,
       cpf,
@@ -101,6 +113,8 @@ const updateCliente = async (req, res) => {
       logradouro,
       numero,
       complemento,
+      telefone_1,
+      telefone_2,
       anotacao,
     } = req.body;
 
@@ -113,6 +127,7 @@ const updateCliente = async (req, res) => {
       id_tipo_cliente,
       id_captacao,
       id_categoria_cliente,
+      id_user,
       nome,
       rg,
       cpf,
@@ -127,6 +142,8 @@ const updateCliente = async (req, res) => {
       logradouro,
       numero,
       complemento,
+      telefone_1,
+      telefone_2,
       anotacao,
     });
 

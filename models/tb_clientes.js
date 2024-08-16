@@ -3,6 +3,7 @@ const conn = require("../data/conn");
 const TipoCliente = require("./tb_tipo_cliente");
 const Captacao = require("./tb_captacao");
 const CategoriaCliente = require("./tb_categoria_cliente");
+const Usuario = require("./tb_usuarios");
 
 const Cliente = conn.define("tb_clientes", {
   id_cliente: {
@@ -23,6 +24,10 @@ const Cliente = conn.define("tb_clientes", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  id_user: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -33,7 +38,7 @@ const Cliente = conn.define("tb_clientes", {
   },
   cpf: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
   },
   email: {
     type: DataTypes.STRING,
@@ -80,6 +85,14 @@ const Cliente = conn.define("tb_clientes", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  telefone_1: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  telefone_2: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   anotacao: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -92,7 +105,6 @@ Cliente.belongsTo(TipoCliente, {
   foreignKeyConstraint: true,
 });
 
-
 Cliente.belongsTo(Captacao, {
   foreignKey: "id_captacao",
   as: "Captacao",
@@ -101,8 +113,15 @@ Cliente.belongsTo(Captacao, {
 
 Cliente.belongsTo(CategoriaCliente, {
   foreignKey: "id_categoria_cliente",
-  as: "CategoriaCliente", 
+  as: "CategoriaCliente",
   foreignKeyConstraint: true,
 });
+
+Cliente.belongsTo(Usuario, {
+  foreignKey: "id_user",
+  as: "Usuario",
+  foreignKeyConstraint: true,
+});
+
 
 module.exports = Cliente;
