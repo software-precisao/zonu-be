@@ -7,23 +7,32 @@ const Etapa = conn.define(
     id_etapa: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      allowNull: false,
       primaryKey: true,
     },
     nome_etapa: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    dias_limpeza: {
+    dias_etapa: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    descricao: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
+    descricao_etapa: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    id_funil: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "tb_funil",
+        key: "id_funil",
+      },
+      allowNull: false,
+    },
   },
-  { freezeTableName: true }
+  {
+    freezeTableName: true,
+  }
 );
 
 module.exports = Etapa;

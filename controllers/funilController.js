@@ -1,13 +1,21 @@
+// controllers/funilController.js
 const Funil = require("../models/tb_funil");
 
 const criarFunil = async (req, res) => {
   try {
-    const { nome_funil, dias_limpeza, descricao } = req.body;
+    const { nome_funil, dias_limpeza, descricao, etapas } = req.body;
+
+    if (!Array.isArray(etapas)) {
+      return res.status(400).json({ error: "Etapas deve ser um array" });
+    }
+
     const novoFunil = await Funil.create({
       nome_funil,
       dias_limpeza,
       descricao,
+      etapas,
     });
+
     res.status(201).json(novoFunil);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -40,9 +48,10 @@ const obterFunilPorId = async (req, res) => {
 const atualizarFunil = async (req, res) => {
   try {
     const { id_funil } = req.params;
-    const { nome_funil, dias_limpeza, descricao } = req.body;
+    const { nome_funil, dias_limpeza, descricao, etapas } = req.body;
+
     const [atualizado] = await Funil.update(
-      { nome_funil, dias_limpeza, descricao },
+      { nome_funil, dias_limpeza, descricao, etapas },
       { where: { id_funil } }
     );
 
@@ -63,7 +72,7 @@ const excluirFunil = async (req, res) => {
     const deletado = await Funil.destroy({ where: { id_funil } });
 
     if (deletado) {
-      return res.status(200).json({ message: "Funil deletado com sucesso" });
+      res.status(200).json({ message: "Funil deletado com sucesso" });
     } else {
       res.status(404).json({ error: "Funil não encontrado" });
     }
