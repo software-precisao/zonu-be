@@ -25,7 +25,7 @@ const obterTodosFunis = async (req, res) => {
 
 const obterFunilPorId = async (req, res) => {
   try {
-    const { id_funil } = req.params.id_funil;
+    const { id_funil } = req.params;
     const funil = await Funil.findByPk(id_funil);
     if (funil) {
       res.status(200).json(funil);
