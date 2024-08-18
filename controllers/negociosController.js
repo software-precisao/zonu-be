@@ -48,7 +48,7 @@ const createNegocio = async (req, res) => {
   try {
     const { id_posicao, id_nivel_interesse, id_cliente, id_imovel } = req.body;
 
-    if (!id_posicao, !id_nivel_interesse || !id_cliente || !id_imovel) {
+    if ((!id_posicao, !id_nivel_interesse || !id_cliente || !id_imovel)) {
       return res
         .status(400)
         .json({ message: "Todos os campos são obrigatórios" });
@@ -91,13 +91,13 @@ const updateNegocio = async (req, res) => {
 const deleteNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
-    const negocio = await Negocio.findByPk(id_negocio);
-    if (!negocio) {
-      return res.status(404).json({ message: "Negócio não encontrado" });
-    }
+    const deletado = await Negocio.destroy({ where: { id_negocio } });
 
-    await negocio.destroy();
-    return res.status(200).json({ message: "Negócio excluído com sucesso" });
+    if (deletado) {
+      return res.status(200).json({ message: "Negócio excluído com sucesso" });
+    } else {
+      res.status(404).json({ error: "Negocio não encontrado" });
+    }
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

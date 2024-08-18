@@ -6,8 +6,8 @@ router.get("/", negociosController.getNegocios);
 
 router.post("/cadastrar", negociosController.createNegocio);
 
-router.put("/:id", negociosController.updateNegocio);
+router.put("/editar/:id_negocio", negociosController.updateNegocio);
 
-router.delete("/:id", negociosController.deleteNegocio);
+router.delete("/deletar/:id_negocio", negociosController.deleteNegocio);
 
 module.exports = router;
