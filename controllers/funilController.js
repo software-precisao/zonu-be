@@ -3,7 +3,11 @@ const Funil = require("../models/tb_funil");
 const criarFunil = async (req, res) => {
   try {
     const { nome_funil, dias_limpeza, descricao } = req.body;
-    const novoFunil = await Funil.create({ nome_funil, dias_limpeza, descricao });
+    const novoFunil = await Funil.create({
+      nome_funil,
+      dias_limpeza,
+      descricao,
+    });
     res.status(201).json(novoFunil);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -35,9 +39,12 @@ const obterFunilPorId = async (req, res) => {
 
 const atualizarFunil = async (req, res) => {
   try {
-    const { id_funil } = req.params.id_funil;
+    const { id_funil } = req.params;
     const { nome_funil, dias_limpeza, descricao } = req.body;
-    const [atualizado] = await Funil.update({ nome_funil, dias_limpeza, descricao }, { where: { id_funil: id } });
+    const [atualizado] = await Funil.update(
+      { nome_funil, dias_limpeza, descricao },
+      { where: { id_funil } }
+    );
 
     if (atualizado) {
       const funilAtualizado = await Funil.findByPk(id_funil);
@@ -52,8 +59,8 @@ const atualizarFunil = async (req, res) => {
 
 const excluirFunil = async (req, res) => {
   try {
-    const { id_funil } = req.params.id_funil;
-    const deletado = await Funil.destroy({ where: { id_funil: id_funil } });
+    const { id_funil } = req.params;
+    const deletado = await Funil.destroy({ where: { id_funil } });
 
     if (deletado) {
       return res.status(200).json({ message: "Funil deletado com sucesso" });

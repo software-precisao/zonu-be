@@ -26,7 +26,6 @@ const createEtapa = async (req, res) => {
   try {
     const { nome_etapa, dias_limpeza, descricao } = req.body;
 
-    // Validação básica
     if (!nome_etapa || !dias_limpeza || !descricao) {
       return res.status(400).json({ message: "Todos os campos são obrigatórios" });
     }
@@ -45,7 +44,7 @@ const createEtapa = async (req, res) => {
 
 const updateEtapa = async (req, res) => {
   try {
-    const { id_etapa } = req.params.id_etapa;
+    const { id_etapa } = req.params;
     const { nome_etapa, dias_limpeza, descricao } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
@@ -66,7 +65,7 @@ const updateEtapa = async (req, res) => {
 
 const deleteEtapa = async (req, res) => {
   try {
-    const { id_etapa } = req.params.id_etapa;
+    const { id_etapa } = req.params;
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).json({ message: "Etapa não encontrada" });
