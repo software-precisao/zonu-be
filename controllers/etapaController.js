@@ -11,7 +11,7 @@ const getEtapas = async (req, res) => {
 
 const getEtapaById = async (req, res) => {
   try {
-    const { id_etapa } = req.params;
+    const { id_etapa } = req.params.id_etapa;
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).json({ message: "Etapa não encontrada" });
@@ -45,7 +45,7 @@ const createEtapa = async (req, res) => {
 
 const updateEtapa = async (req, res) => {
   try {
-    const { id_etapa } = req.params;
+    const { id_etapa } = req.params.id_etapa;
     const { nome_etapa, dias_limpeza, descricao } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
@@ -66,7 +66,7 @@ const updateEtapa = async (req, res) => {
 
 const deleteEtapa = async (req, res) => {
   try {
-    const { id_etapa } = req.params;
+    const { id_etapa } = req.params.id_etapa;
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).json({ message: "Etapa não encontrada" });

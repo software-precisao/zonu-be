@@ -21,7 +21,7 @@ const obterTodosFunis = async (req, res) => {
 
 const obterFunilPorId = async (req, res) => {
   try {
-    const { id_funil } = req.params;
+    const { id_funil } = req.params.id_funil;
     const funil = await Funil.findByPk(id_funil);
     if (funil) {
       res.status(200).json(funil);
@@ -35,7 +35,7 @@ const obterFunilPorId = async (req, res) => {
 
 const atualizarFunil = async (req, res) => {
   try {
-    const { id_funil } = req.params;
+    const { id_funil } = req.params.id_funil;
     const { nome_funil, dias_limpeza, descricao } = req.body;
     const [atualizado] = await Funil.update({ nome_funil, dias_limpeza, descricao }, { where: { id_funil: id } });
 
@@ -52,7 +52,7 @@ const atualizarFunil = async (req, res) => {
 
 const excluirFunil = async (req, res) => {
   try {
-    const { id_funil } = req.params;
+    const { id_funil } = req.params.id_funil;
     const deletado = await Funil.destroy({ where: { id_funil: id_funil } });
 
     if (deletado) {
