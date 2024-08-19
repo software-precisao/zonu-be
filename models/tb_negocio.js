@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 const Cliente = require("./tb_clientes");
-const Posicao = require("./tb_posicao");
+const Etapa = require("./tb_etapa");
 const NivelInteresse = require("./tb_niveis_interesse");
 const NovoImovel = require("./tb_imovel");
 
@@ -14,7 +14,7 @@ const Negocio = conn.define(
       allowNull: false,
       primaryKey: true,
     },
-    id_posicao: {
+    id_etapa: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -34,9 +34,9 @@ const Negocio = conn.define(
   { freezeTableName: true }
 );
 
-Negocio.belongsTo(Posicao, {
-  foreignKey: "id_posicao",
-  as: "Posicao" // 
+Negocio.belongsTo(Etapa, {
+  foreignKey: "id_etapa",
+  as: "Etapa" 
 });
 
 Negocio.belongsTo(NivelInteresse, {

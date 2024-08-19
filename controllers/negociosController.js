@@ -1,6 +1,6 @@
 const Negocio = require("../models/tb_negocio");
 const Cliente = require("../models/tb_clientes");
-const Posicao = require("../models/tb_posicao");
+const Etapa = require("../models/tb_etapa");
 const NivelInteresse = require("../models/tb_niveis_interesse");
 const NovoImovel = require("../models/tb_imovel");
 
@@ -9,7 +9,7 @@ const getNegocios = async (req, res) => {
     const negocios = await Negocio.findAll({
       attributes: {
         exclude: [
-          "id_posicao",
+          "id_etapa",
           "id_nivel_interesse",
           "id_cliente",
           "id_imovel",
@@ -17,9 +17,9 @@ const getNegocios = async (req, res) => {
       },
       include: [
         {
-          model: Posicao,
-          as: "Posicao",
-          attributes: ["tipo_posicao"],
+          model: Etapa,
+          as: "Etapa",
+          attributes: ["nome_etapa"],
         },
         {
           model: NivelInteresse,
@@ -46,16 +46,16 @@ const getNegocios = async (req, res) => {
 
 const createNegocio = async (req, res) => {
   try {
-    const { id_posicao, id_nivel_interesse, id_cliente, id_imovel } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel } = req.body;
 
-    if ((!id_posicao, !id_nivel_interesse || !id_cliente || !id_imovel)) {
+    if ((!id_etapa, !id_nivel_interesse || !id_cliente || !id_imovel)) {
       return res
         .status(400)
         .json({ message: "Todos os campos são obrigatórios" });
     }
 
     const novoNegocio = await Negocio.create({
-      id_posicao,
+      id_etapa,
       id_nivel_interesse,
       id_cliente,
       id_imovel,
@@ -69,13 +69,13 @@ const createNegocio = async (req, res) => {
 const updateNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
-    const { id_posicao, id_nivel_interesse, id_cliente, id_imovel } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel } = req.body;
 
     const negocio = await Negocio.findByPk(id_negocio);
     if (!negocio) {
       return res.status(404).json({ message: "Negócio não encontrado" });
     }
-    negocio.id_posicao = id_posicao || negocio.id_posicao;
+    negocio.id_etapa = id_etapa || negocio.id_etapa;
     negocio.id_nivel_interesse =
       id_nivel_interesse || negocio.id_nivel_interesse;
     negocio.id_cliente = id_cliente || negocio.id_cliente;
