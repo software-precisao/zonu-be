@@ -19,17 +19,17 @@ const getNegocios = async (req, res) => {
         {
           model: Etapa,
           as: "Etapa",
-          attributes: ["nome_etapa"],
+          attributes: ["id_etapa", "nome_etapa"],
         },
         {
           model: NivelInteresse,
           as: "NivelInteresse",
-          attributes: ["nivel_interesse"],
+          attributes: ["id_nivel_interesse", "nivel_interesse"],
         },
         {
           model: Cliente,
           as: "Cliente",
-          attributes: ["nome"],
+          attributes: ["id_cliente","nome"],
         },
         {
           model: NovoImovel,
