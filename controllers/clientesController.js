@@ -3,6 +3,8 @@ const TipoCliente = require("../models/tb_tipo_cliente");
 const Captacao = require("../models/tb_captacao");
 const CategoriaCliente = require("../models/tb_categoria_cliente");
 const Usuario = require("../models/tb_usuarios");
+const PessoasLigadas = require("../models/tb_pessoas_ligadas");
+
 
 const getClientes = async (req, res) => {
   try {
@@ -28,6 +30,11 @@ const getClientes = async (req, res) => {
           as: "Usuario",
           attributes: ["nome"],
         },
+        {
+          model: Cliente,
+          as: 'PessoaLigada',
+          attributes: ['id_cliente', 'nome', 'email'] 
+        }
       ],
     });
     return res.status(200).json(clientes);
@@ -108,8 +115,10 @@ const createCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
+      id_pessoa_ligada 
     } = req.body;
 
+    // Cria o novo cliente
     const novoCliente = await Cliente.create({
       id_tipo_cliente,
       id_captacao,
@@ -132,7 +141,17 @@ const createCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
+      id_pessoa_ligada, 
     });
+
+    // Se houver um cliente ligado, atualiza a tabela de pessoas ligadas
+    if (id_pessoa_ligada) {
+      await PessoasLigadas.create({
+        id_cliente: id_pessoa_ligada,
+        breve_descricao: `Cliente ${novoCliente.id_cliente} criado.`,
+      });
+    }
+
     return res.status(201).json(novoCliente);
   } catch (error) {
     return res.status(500).json({ error: error.message });

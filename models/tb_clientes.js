@@ -97,6 +97,17 @@ const Cliente = conn.define("tb_clientes", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  id_pessoa_ligada: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+});
+
+// Associa o cliente a ele mesmo para representar a ligação com outro cliente
+Cliente.belongsTo(Cliente, {
+  foreignKey: "id_pessoa_ligada",
+  as: "PessoaLigada", 
+  foreignKeyConstraint: true,
 });
 
 Cliente.belongsTo(TipoCliente, {
@@ -122,6 +133,5 @@ Cliente.belongsTo(Usuario, {
   as: "Usuario",
   foreignKeyConstraint: true,
 });
-
 
 module.exports = Cliente;
