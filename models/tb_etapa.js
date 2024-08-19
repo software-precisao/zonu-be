@@ -13,26 +13,23 @@ const Etapa = conn.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    dias_etapa: {
+    dias_limpeza: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    descricao_etapa: {
+    descricao: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     id_funil: {
       type: DataTypes.INTEGER,
       references: {
-        model: "tb_funil",
-        key: "id_funil",
-      },
-      allowNull: false,
-    },
+        model: 'tb_funil',
+        key: 'id_funil'
+      }
+    }
   },
-  {
-    freezeTableName: true,
-  }
+  { freezeTableName: true }
 );
 
 module.exports = Etapa;

@@ -1,5 +1,5 @@
-// controllers/funilController.js
 const Funil = require("../models/tb_funil");
+const Etapa = require("../models/tb_etapa");
 
 const criarFunil = async (req, res) => {
   try {
@@ -13,18 +13,36 @@ const criarFunil = async (req, res) => {
       nome_funil,
       dias_limpeza,
       descricao,
-      etapas,
     });
 
-    res.status(201).json(novoFunil);
+    const etapasCriadas = [];
+    if (etapas.length > 0) {
+      for (const etapa of etapas) {
+        const etapaCriada = await Etapa.create({
+          nome_etapa: etapa.nome_etapa,
+          dias_limpeza: etapa.dias_limpeza,
+          descricao: etapa.descricao,
+          id_funil: novoFunil.id_funil,
+        });
+        etapasCriadas.push(etapaCriada);
+      }
+    }
+
+    return res.status(201).json({
+      message: "Funil e etapas criados com sucesso",
+      funil: novoFunil,
+      etapas: etapasCriadas,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 const obterTodosFunis = async (req, res) => {
   try {
-    const funis = await Funil.findAll();
+    const funis = await Funil.findAll({
+      include: [{ model: Etapa, as: "etapas" }],
+    });
     res.status(200).json(funis);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -34,7 +52,9 @@ const obterTodosFunis = async (req, res) => {
 const obterFunilPorId = async (req, res) => {
   try {
     const { id_funil } = req.params;
-    const funil = await Funil.findByPk(id_funil);
+    const funil = await Funil.findByPk(id_funil, {
+      include: [{ model: Etapa, as: "etapas" }],
+    });
     if (funil) {
       res.status(200).json(funil);
     } else {
@@ -51,12 +71,39 @@ const atualizarFunil = async (req, res) => {
     const { nome_funil, dias_limpeza, descricao, etapas } = req.body;
 
     const [atualizado] = await Funil.update(
-      { nome_funil, dias_limpeza, descricao, etapas },
+      { nome_funil, dias_limpeza, descricao },
       { where: { id_funil } }
     );
 
     if (atualizado) {
-      const funilAtualizado = await Funil.findByPk(id_funil);
+      if (Array.isArray(etapas)) {
+        await Etapa.destroy({ where: { id_funil } });
+
+        for (const etapa of etapas) {
+          if (etapa.id_etapa) {
+            await Etapa.update(
+              {
+                nome_etapa: etapa.nome_etapa,
+                dias_limpeza: etapa.dias_limpeza,
+                descricao: etapa.descricao,
+              },
+              { where: { id_etapa: etapa.id_etapa } }
+            );
+          } else {
+            await Etapa.create({
+              nome_etapa: etapa.nome_etapa,
+              dias_limpeza: etapa.dias_limpeza,
+              descricao: etapa.descricao,
+              id_funil: id_funil,
+            });
+          }
+        }
+      }
+
+      const funilAtualizado = await Funil.findByPk(id_funil, {
+        include: [{ model: Etapa, as: "etapas" }],
+      });
+
       res.status(200).json(funilAtualizado);
     } else {
       res.status(404).json({ error: "Funil não encontrado" });
@@ -69,10 +116,13 @@ const atualizarFunil = async (req, res) => {
 const excluirFunil = async (req, res) => {
   try {
     const { id_funil } = req.params;
+
+    await Etapa.destroy({ where: { id_funil } });
+
     const deletado = await Funil.destroy({ where: { id_funil } });
 
     if (deletado) {
-      res.status(200).json({ message: "Funil deletado com sucesso" });
+      res.status(200).json({ message: "Funil e etapas deletados com sucesso" });
     } else {
       res.status(404).json({ error: "Funil não encontrado" });
     }

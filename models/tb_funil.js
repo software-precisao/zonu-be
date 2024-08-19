@@ -1,6 +1,6 @@
-// models/tb_funil.js
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
+const Etapa = require("./tb_etapa");
 
 const Funil = conn.define(
   "tb_funil",
@@ -21,13 +21,20 @@ const Funil = conn.define(
     descricao: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    etapas: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
+    }
   },
   { freezeTableName: true }
 );
+
+
+Funil.hasMany(Etapa, {
+  foreignKey: 'id_funil',
+  as: 'etapas',
+  onDelete: 'CASCADE', 
+});
+Etapa.belongsTo(Funil, {
+  foreignKey: 'id_funil',
+  as: 'funil'
+});
 
 module.exports = Funil;
