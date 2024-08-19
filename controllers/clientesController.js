@@ -36,6 +36,54 @@ const getClientes = async (req, res) => {
   }
 };
 
+const getClienteById = async (req, res) => {
+  try {
+    const { id_cliente } = req.params;
+
+    if (!id_cliente) {
+      return res.status(400).json({ message: "ID do cliente é obrigatório" });
+    }
+
+    const cliente = await Cliente.findByPk(id_cliente, {
+      include: [
+        {
+          model: TipoCliente,
+          as: "TipoCliente",
+          attributes: ["tipo_cliente"],
+        },
+        {
+          model: Captacao,
+          as: "Captacao",
+          attributes: ["origem_captacao"],
+        },
+        {
+          model: CategoriaCliente,
+          as: "CategoriaCliente",
+          attributes: ["categoria_cliente"],
+        },
+        {
+          model: Usuario,
+          as: "Usuario",
+          attributes: ["nome"],
+        },
+        {
+          model: Cliente,
+          as: 'PessoaLigada',
+          attributes: ['id_cliente', 'nome', 'email']
+        }
+      ],
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ message: "Cliente não encontrado" });
+    }
+
+    return res.status(200).json(cliente);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 const createCliente = async (req, res) => {
   try {
     const {
@@ -173,4 +221,5 @@ module.exports = {
   createCliente,
   updateCliente,
   deleteCliente,
+  getClienteById
 };
