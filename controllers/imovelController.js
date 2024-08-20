@@ -248,6 +248,23 @@ const criarImovel = async (req, res) => {
     let info = await transporter.sendMail(mailOptions);
     console.log("Mensagem enviada: %s", info.messageId);
 
+    const imoveisCount = await Imovel.count({
+      where: { id_user: req.body.id_user },
+    });
+    console.log(`Total de imóveis para o usuário ${req.body.id_user}: ${imoveisCount}`);
+
+    if (imoveisCount === 1) {
+      await User.update(
+        { initial: 1 },
+        { where: { id_user: req.body.id_user } }
+      );
+
+      const usuarioAtualizado = await User.findOne({
+        where: { id_user: req.body.id_user },
+      });
+      console.log("Usuário atualizado:", usuarioAtualizado);
+    }
+
     return res.status(200).send("Imovel criado com sucesso!");
   } catch (error) {
     console.error("Erro ao criar Imovel: ", error);
