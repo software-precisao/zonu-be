@@ -5,7 +5,6 @@ const CategoriaCliente = require("../models/tb_categoria_cliente");
 const Usuario = require("../models/tb_usuarios");
 const PessoasLigadas = require("../models/tb_pessoas_ligadas");
 
-
 const getClientes = async (req, res) => {
   try {
     const clientes = await Cliente.findAll({
@@ -32,9 +31,9 @@ const getClientes = async (req, res) => {
         },
         {
           model: Cliente,
-          as: 'PessoaLigada',
-          attributes: ['id_cliente', 'nome', 'email'] 
-        }
+          as: "PessoaLigada",
+          attributes: ["id_cliente", "nome", "email"],
+        },
       ],
     });
     return res.status(200).json(clientes);
@@ -75,9 +74,9 @@ const getClienteById = async (req, res) => {
         },
         {
           model: Cliente,
-          as: 'PessoaLigada',
-          attributes: ['id_cliente', 'nome', 'email']
-        }
+          as: "PessoaLigada",
+          attributes: ["id_cliente", "nome", "email"],
+        },
       ],
     });
 
@@ -115,10 +114,9 @@ const createCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
-      id_pessoa_ligada 
+      pessoas_ligadas,
     } = req.body;
 
-    // Cria o novo cliente
     const novoCliente = await Cliente.create({
       id_tipo_cliente,
       id_captacao,
@@ -141,18 +139,22 @@ const createCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
-      id_pessoa_ligada, 
     });
 
-    // Se houver um cliente ligado, atualiza a tabela de pessoas ligadas
-    if (id_pessoa_ligada) {
-      await PessoasLigadas.create({
-        id_cliente: id_pessoa_ligada,
-        breve_descricao: `Cliente ${novoCliente.id_cliente} criado.`,
-      });
+    const cliente = {...novoCliente.dataValues, pessoas_ligadas: []}
+
+    if (pessoas_ligadas) {
+      for (let i = 0; i < pessoas_ligadas.length; i++) {
+        const { id_pessoa_ligada, breve_descricao } = pessoas_ligadas[i];
+        const pessoa = await PessoasLigadas.create({
+          id_cliente: id_pessoa_ligada,
+          breve_descricao: breve_descricao,
+        });
+        cliente.pessoas_ligadas.push(pessoa);
+      }
     }
 
-    return res.status(201).json(novoCliente);
+    return res.status(201).json(cliente);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -183,6 +185,7 @@ const updateCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
+      
     } = req.body;
 
     const cliente = await Cliente.findByPk(id);
@@ -212,6 +215,7 @@ const updateCliente = async (req, res) => {
       telefone_1,
       telefone_2,
       anotacao,
+      
     });
 
     return res.status(200).json(cliente);
@@ -240,5 +244,5 @@ module.exports = {
   createCliente,
   updateCliente,
   deleteCliente,
-  getClienteById
+  getClienteById,
 };
