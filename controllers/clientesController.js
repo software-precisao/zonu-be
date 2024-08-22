@@ -2,8 +2,8 @@ const Cliente = require("../models/tb_clientes");
 const TipoCliente = require("../models/tb_tipo_cliente");
 const Captacao = require("../models/tb_captacao");
 const CategoriaCliente = require("../models/tb_categoria_cliente");
-const Usuario = require("../models/tb_usuarios");
 const PessoasLigadas = require("../models/tb_pessoas_ligadas");
+const Usuario = require("../models/tb_usuarios");
 
 const getClientes = async (req, res) => {
   try {
@@ -28,15 +28,28 @@ const getClientes = async (req, res) => {
           model: Usuario,
           as: "Usuario",
           attributes: ["nome"],
-        },
-        {
-          model: Cliente,
-          as: "PessoaLigada",
-          attributes: ["id_cliente", "nome", "email"],
-        },
+        }
       ],
     });
-    return res.status(200).json(clientes);
+
+    const clientesResponse = [];
+    for(let i = 0; i < clientes.length; i++){
+      const cliente = {...clientes[i].dataValues}
+      const pessoasLigadas = await PessoasLigadas.findAll({ 
+        where: {
+          id_cliente: cliente.id_cliente
+        }
+      })
+
+      clientesResponse.push({
+        ...cliente,
+        pessoasLigadas: pessoasLigadas.map(v => v.dataValues)
+      })
+    }
+
+    return res.status(200).json(
+      clientesResponse
+    );
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -146,16 +159,20 @@ const createCliente = async (req, res) => {
     if (pessoas_ligadas) {
       for (let i = 0; i < pessoas_ligadas.length; i++) {
         const { id_pessoa_ligada, breve_descricao } = pessoas_ligadas[i];
+
         const pessoa = await PessoasLigadas.create({
-          id_cliente: id_pessoa_ligada,
+          id_cliente: cliente.id_cliente,
+          id_pessoa_ligada,
           breve_descricao: breve_descricao,
         });
+
         cliente.pessoas_ligadas.push(pessoa);
       }
     }
 
     return res.status(201).json(cliente);
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ error: error.message });
   }
 };

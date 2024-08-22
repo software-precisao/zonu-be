@@ -8,15 +8,34 @@ const getPessoasLigadas = async (req, res) => {
         {
           model: Cliente,
           as: "Cliente",
-          attributes: ['nome'] 
-        },
-      ],
+          attributes: ['nome', 'id_cliente'] 
+        }
+      ]
     });
-    return res.status(200).json(pessoasLigadas);
+
+    const result = pessoasLigadas.map(pessoa => {
+      const cliente = pessoa.Cliente || {};
+
+      return {
+        id_pessoa_ligada: pessoa.id_pessoa_ligada,
+        id_cliente: pessoa.id_cliente,
+        breve_descricao: pessoa.breve_descricao,
+        createdAt: pessoa.createdAt,
+        updatedAt: pessoa.updatedAt,
+        Cliente: {
+          nome: cliente.nome || null,
+          id_cliente: cliente.id_cliente || null
+        }
+      };
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
 
 const createPessoaLigada = async (req, res) => {
   try {

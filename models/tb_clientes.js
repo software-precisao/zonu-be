@@ -102,13 +102,6 @@ const Cliente = conn.define("tb_clientes", {
   },
 });
 
-// Associa o cliente a ele mesmo para representar a ligação com outro cliente
-Cliente.belongsTo(Cliente, {
-  foreignKey: "id_pessoa_ligada",
-  as: "PessoaLigada", 
-  foreignKeyConstraint: true,
-});
-
 Cliente.belongsTo(TipoCliente, {
   foreignKey: "id_tipo_cliente",
   as: "TipoCliente",
