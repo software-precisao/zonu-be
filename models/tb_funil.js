@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 const Etapa = require("./tb_etapa");
+const Usuario = require("./tb_usuarios");
 
 const Funil = conn.define(
   "tb_funil",
@@ -21,10 +22,19 @@ const Funil = conn.define(
     descricao: {
       type: DataTypes.STRING,
       allowNull: true,
-    }
+    },
+    id_user: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   { freezeTableName: true }
 );
+
+Funil.belongsTo(Usuario, {
+  foreignKey: "id_user",
+  as: "Usuario" 
+});
 
 
 Funil.hasMany(Etapa, {

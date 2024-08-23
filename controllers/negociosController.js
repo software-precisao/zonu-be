@@ -3,6 +3,7 @@ const Cliente = require("../models/tb_clientes");
 const Etapa = require("../models/tb_etapa");
 const NivelInteresse = require("../models/tb_niveis_interesse");
 const NovoImovel = require("../models/tb_imovel");
+const Usuario = require("../models/tb_usuarios");
 
 const getNegocios = async (req, res) => {
   try {
@@ -13,6 +14,7 @@ const getNegocios = async (req, res) => {
           "id_nivel_interesse",
           "id_cliente",
           "id_imovel",
+          "id_user"
         ],
       },
       include: [
@@ -36,6 +38,11 @@ const getNegocios = async (req, res) => {
           as: "NovoImovel",
           attributes: ["id_imovel"],
         },
+        {
+          model: Usuario,
+          as: "Usuario",
+          attributes: ["id_user", "nome"],
+        },
       ],
     });
     return res.status(200).json(negocios);
@@ -46,7 +53,7 @@ const getNegocios = async (req, res) => {
 
 const createNegocio = async (req, res) => {
   try {
-    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel, id_user } = req.body;
 
     if ((!id_etapa, !id_nivel_interesse || !id_cliente || !id_imovel)) {
       return res
@@ -59,6 +66,7 @@ const createNegocio = async (req, res) => {
       id_nivel_interesse,
       id_cliente,
       id_imovel,
+      id_user
     });
     return res.status(201).json(novoNegocio);
   } catch (error) {
@@ -69,7 +77,7 @@ const createNegocio = async (req, res) => {
 const updateNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
-    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel,id_user } = req.body;
 
     const negocio = await Negocio.findByPk(id_negocio);
     if (!negocio) {
@@ -80,6 +88,7 @@ const updateNegocio = async (req, res) => {
       id_nivel_interesse || negocio.id_nivel_interesse;
     negocio.id_cliente = id_cliente || negocio.id_cliente;
     negocio.id_imovel = id_imovel || negocio.id_imovel;
+    negocio.id_user = id_user || negocio.id_user;
 
     await negocio.save();
     return res.status(200).json(negocio);

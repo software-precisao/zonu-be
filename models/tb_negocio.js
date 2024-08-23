@@ -4,6 +4,8 @@ const Cliente = require("./tb_clientes");
 const Etapa = require("./tb_etapa");
 const NivelInteresse = require("./tb_niveis_interesse");
 const NovoImovel = require("./tb_imovel");
+const Usuario = require("./tb_usuarios");
+
 
 const Negocio = conn.define(
   "tb_negocio",
@@ -15,6 +17,10 @@ const Negocio = conn.define(
       primaryKey: true,
     },
     id_etapa: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    id_user: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -33,6 +39,11 @@ const Negocio = conn.define(
   },
   { freezeTableName: true }
 );
+
+Negocio.belongsTo(Usuario, {
+  foreignKey: "id_user",
+  as: "Usuario" 
+});
 
 Negocio.belongsTo(Etapa, {
   foreignKey: "id_etapa",

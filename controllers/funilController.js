@@ -1,9 +1,10 @@
 const Funil = require("../models/tb_funil");
 const Etapa = require("../models/tb_etapa");
+const Usuario = require("../models/tb_usuarios");
 
 const criarFunil = async (req, res) => {
   try {
-    const { nome_funil, dias_limpeza, descricao, etapas } = req.body;
+    const { nome_funil, dias_limpeza, descricao, etapas, id_user } = req.body;
 
     if (!Array.isArray(etapas)) {
       return res.status(400).json({ error: "Etapas deve ser um array" });
@@ -13,6 +14,7 @@ const criarFunil = async (req, res) => {
       nome_funil,
       dias_limpeza,
       descricao,
+      id_user
     });
 
     const etapasCriadas = [];
@@ -42,6 +44,7 @@ const obterTodosFunis = async (req, res) => {
   try {
     const funis = await Funil.findAll({
       include: [{ model: Etapa, as: "etapas" }],
+      include: [{ model: Usuario, as: "Usuario" }],
     });
     res.status(200).json(funis);
   } catch (error) {
@@ -68,7 +71,7 @@ const obterFunilPorId = async (req, res) => {
 const atualizarFunil = async (req, res) => {
   try {
     const { id_funil } = req.params;
-    const { nome_funil, dias_limpeza, descricao, etapas } = req.body;
+    const { nome_funil, dias_limpeza, descricao, etapas, id_user } = req.body;
 
     const [atualizado] = await Funil.update(
       { nome_funil, dias_limpeza, descricao },
