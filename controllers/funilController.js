@@ -14,7 +14,7 @@ const criarFunil = async (req, res) => {
       nome_funil,
       dias_limpeza,
       descricao,
-      id_user
+      id_user,
     });
 
     const etapasCriadas = [];
@@ -43,8 +43,10 @@ const criarFunil = async (req, res) => {
 const obterTodosFunis = async (req, res) => {
   try {
     const funis = await Funil.findAll({
-      include: [{ model: Etapa, as: "etapas" }],
-      include: [{ model: Usuario, as: "Usuario" }],
+      include: [
+        { model: Etapa, as: "etapas" },
+        { model: Usuario, as: "Usuario" },
+      ],
     });
     res.status(200).json(funis);
   } catch (error) {
@@ -74,7 +76,7 @@ const atualizarFunil = async (req, res) => {
     const { nome_funil, dias_limpeza, descricao, etapas, id_user } = req.body;
 
     const [atualizado] = await Funil.update(
-      { nome_funil, dias_limpeza, descricao },
+      { nome_funil, dias_limpeza, descricao, id_user },
       { where: { id_funil } }
     );
 
@@ -83,23 +85,12 @@ const atualizarFunil = async (req, res) => {
         await Etapa.destroy({ where: { id_funil } });
 
         for (const etapa of etapas) {
-          if (etapa.id_etapa) {
-            await Etapa.update(
-              {
-                nome_etapa: etapa.nome_etapa,
-                dias_limpeza: etapa.dias_limpeza,
-                descricao: etapa.descricao,
-              },
-              { where: { id_etapa: etapa.id_etapa } }
-            );
-          } else {
-            await Etapa.create({
-              nome_etapa: etapa.nome_etapa,
-              dias_limpeza: etapa.dias_limpeza,
-              descricao: etapa.descricao,
-              id_funil: id_funil,
-            });
-          }
+          await Etapa.create({
+            nome_etapa: etapa.nome_etapa,
+            dias_limpeza: etapa.dias_limpeza,
+            descricao: etapa.descricao,
+            id_funil: id_funil,
+          });
         }
       }
 
