@@ -470,8 +470,8 @@ const editarImovel = async (req, res) => {
 
     let proximidades = [];
     try {
-      if (req.body.id_proximidades) {
-        proximidades = JSON.parse(req.body.id_proximidades).filter(
+      if (req.body.id_proximidade) {
+        proximidades = JSON.parse(req.body.id_proximidade).filter(
           (id) => id > 0
         );
       }
