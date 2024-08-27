@@ -19,12 +19,12 @@ const Medidas = conn.define("tb_medidas", {
   },
 
   area_total: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 2),
     allowNull: true,
   },
 
   media_metro_quadrado: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(20, 2),
     allowNull: true,
   },
  

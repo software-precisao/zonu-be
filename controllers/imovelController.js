@@ -431,14 +431,19 @@ const editarImovel = async (req, res) => {
 
     let caracteristicas = [];
     try {
-      caracteristicas = JSON.parse(req.body.id_caracteristicas);
+      if (req.body.id_caracteristicas) {
+        caracteristicas = JSON.parse(req.body.id_caracteristicas).filter(
+          (id) => id > 0
+        );
+      }
     } catch (error) {
-      console.log("Erro ao analisar caracteristicas:", error);
+      console.log("Erro ao analisar características:", error);
       return res
         .status(400)
-        .send({ mensagem: "Formato inválido para caracteristicas" });
+        .send({ mensagem: "Formato inválido para características" });
     }
-    if (Array.isArray(caracteristicas)) {
+
+    if (Array.isArray(caracteristicas) && caracteristicas.length > 0) {
       const validCaracteristicas = await Caracteristica.findAll({
         where: {
           id_caracteristica: caracteristicas,
@@ -465,17 +470,22 @@ const editarImovel = async (req, res) => {
 
     let proximidades = [];
     try {
-      proximidades = JSON.parse(req.body.id_proximidades);
+      if (req.body.id_proximidades) {
+        proximidades = JSON.parse(req.body.id_proximidades).filter(
+          (id) => id > 0
+        );
+      }
     } catch (error) {
       console.log("Erro ao analisar proximidades:", error);
       return res
         .status(400)
         .send({ mensagem: "Formato inválido para proximidades" });
     }
-    if (Array.isArray(proximidades)) {
+
+    if (Array.isArray(proximidades) && proximidades.length > 0) {
       const validProximidades = await Proximidade.findAll({
         where: {
-          id_proximidades: proximidades,
+          id_proximidade: proximidades,
         },
       });
 
@@ -490,7 +500,7 @@ const editarImovel = async (req, res) => {
       await Promise.all(
         proximidades.map((dado) =>
           Proximidades.create({
-            id_proximidades: dado,
+            id_proximidade: dado,
             id_imovel: id_imovel,
           })
         )
