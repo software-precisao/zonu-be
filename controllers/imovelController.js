@@ -16,6 +16,7 @@ const Publicacao = require("../models/tb_publicacao");
 const Imovel = require("../models/tb_imovel");
 const Qrcode = require("../models/tb_qrcode");
 const User = require("../models/tb_usuarios");
+const Negocio = require("../models/tb_negocio");
 
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -251,7 +252,9 @@ const criarImovel = async (req, res) => {
     const imoveisCount = await Imovel.count({
       where: { id_user: req.body.id_user },
     });
-    console.log(`Total de imóveis para o usuário ${req.body.id_user}: ${imoveisCount}`);
+    console.log(
+      `Total de imóveis para o usuário ${req.body.id_user}: ${imoveisCount}`
+    );
 
     if (imoveisCount === 1) {
       await User.update(
@@ -689,6 +692,8 @@ const excluirImovel = async (req, res) => {
     if (!imovel) {
       return res.status(404).json({ mensagem: "Imóvel não encontrado" });
     }
+
+    await Negocio.destroy({ where: { id_imovel } });
 
     await Imovel.destroy({ where: { id_imovel } });
 
