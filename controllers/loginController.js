@@ -8,23 +8,36 @@ const MyToken = require("../models/tb_token");
 const Qrcode = require("../models/tb_qrcode");
 const Controle = require("../models/tb_controle_teste");
 const UserStatus = require("../models/tb_user_status");
+const PerfilUserImobiliaria = require("../models/tb_perfil_user_imobiliaria");
 
 const autenticarUsuario = async (req, res, next) => {
   try {
     const { email, senha } = req.body;
 
-    const user = await Usuario.findOne({ where: { email: email } });
+    let user = await PerfilUserImobiliaria.findOne({ where: { email: email } });
+
+    if (!user) {
+      user = await Usuario.findOne({ where: { email: email } });
+    }
 
     if (!user) {
       return res.status(401).send({
-        mensagem: "Falha na autenticação.",
+        mensagem: "Falha na autenticação. Usuário não encontrado.",
       });
     }
 
     const isPasswordValid = await bcrypt.compare(senha, user.senha);
+
+    if (!isPasswordValid) {
+      return res.status(401).send({
+        mensagem: "Falha na autenticação. Senha incorreta.",
+      });
+    }
+
     const controle = await Controle.findOne({
       where: { id_user: user.id_user },
     });
+
     if (controle) {
       const dataFimTeste = new Date(controle.data_inicio);
       dataFimTeste.setDate(dataFimTeste.getDate() + 7);
@@ -36,54 +49,54 @@ const autenticarUsuario = async (req, res, next) => {
       }
     }
 
-    if (isPasswordValid) {
-      const userStatus = await UserStatus.findOne({
-        where: { id_user: user.id_user },
-      });
-      if (userStatus && userStatus.status === 1) {
-        return res.status(403).send({
-          mensagem: "Usuário já está logado em outro dispositivo.",
-        });
-      }
-      const perfil = await Perfil.findOne({ where: { id_user: user.id_user } });
-      const subperfil = await SubPerfil.findOne({ where: { id_user: user.id_user } });
-      const mytoken = await MyToken.findOne({
-        where: { id_user: user.id_user },
-      });
-      const qrcode = await Qrcode.findOne({ where: { id_user: user.id_user } });
-      const token = jwt.sign(
-        {
-          id_user: user.id_user,
-          nome: user.nome,
-          sobrenome: user.sobrenome,
-          email: user.email,
-          avatar: user.avatar,
-          id_plano: user.id_plano,
-          id_nivel: user.id_nivel,
-          id_status: user.id_status,
-          perfil: perfil,
-          subperfil: subperfil,
-          token: mytoken,
-          qrcode: qrcode,
-          initial: user.initial,
-        },
-        process.env.JWT_KEY,
-        {
-          expiresIn: "6h",
-        }
-      );
+    const userStatus = await UserStatus.findOne({
+      where: { id_user: user.id_user },
+    });
 
-      return res.status(200).send({
-        mensagem: "Autenticado com sucesso!",
-        token: token,
-        id_status: user.id_status,
-        initial: user.initial,
-        id_status: user.id_status,
-        id_nivel: user.id_nivel,
+    if (userStatus && userStatus.status === 1) {
+      return res.status(403).send({
+        mensagem: "Usuário já está logado em outro dispositivo.",
       });
-    } else {
-      return res.status(401).send({ mensagem: "Falha na autenticação." });
     }
+
+    const perfil = await Perfil.findOne({ where: { id_user: user.id_user } });
+    const subperfil = await SubPerfil.findOne({
+      where: { id_user: user.id_user },
+    });
+    const mytoken = await MyToken.findOne({
+      where: { id_user: user.id_user },
+    });
+    const qrcode = await Qrcode.findOne({ where: { id_user: user.id_user } });
+
+    const token = jwt.sign(
+      {
+        id_user: user.id_user,
+        nome: user.nome,
+        sobrenome: user.sobrenome,
+        email: user.email,
+        avatar: user.avatar,
+        id_plano: user.id_plano,
+        id_nivel: user.id_nivel,
+        id_status: user.id_status,
+        perfil: perfil,
+        subperfil: subperfil,
+        token: mytoken,
+        qrcode: qrcode,
+        initial: user.initial,
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "6h",
+      }
+    );
+
+    return res.status(200).send({
+      mensagem: "Autenticado com sucesso!",
+      token: token,
+      id_status: user.id_status,
+      initial: user.initial,
+      id_nivel: user.id_nivel,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message });

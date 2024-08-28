@@ -31,6 +31,8 @@ const moment = require("moment");
 const sequelize = require("../data/conn");
 const Controle = require("../models/tb_controle_teste");
 const LinkTemporario = require("../models/tb_links_temporarios");
+const PerfilUserImobiliaria = require("../models/tb_perfil_user_imobiliaria");
+const Status = require("../models/tb_status");
 
 //POST de usuários
 
@@ -683,9 +685,10 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
   }
 };
 
+
 const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
-    const usuarioExistente = await User.findOne({
+    const usuarioExistente = await PerfilUserImobiliaria.findOne({
       where: { email: req.body.email },
     });
 
@@ -698,31 +701,15 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
     const filename = req.file ? req.file.filename : "default-avatar.png";
 
-    const novoUsuario = await User.create({
+    const novoUsuario = await PerfilUserImobiliaria.create({
       nome: req.body.nome,
       sobrenome: req.body.sobrenome,
       email: req.body.email,
       senha: hashedPassword,
-      avatar: `/avatar/${filename}`,
-      id_plano: req.body.id_plano,
-      id_status: 1,
-      id_nivel: 6,
-      initial: 1,
-    });
-
-    const PerfilOriginario = await Perfil.findOne({
-      where: { id_user: req.body.id_user },
-    });
-
-    if (!PerfilOriginario) {
-      return res
-        .status(404)
-        .send({ mensagem: "Perfil da imobiliária pai não encontrado." });
-    }
-
-    const novoperfil = await PerfilUser.create({
-      id_perfil: PerfilOriginario.id_perfil,
-      id_user: novoUsuario.id_user,
+      id_perfil: req.body.id_perfil, // Perfil associado da imobiliária pai
+      id_user: req.body.id_user, // ID da imobiliária pai
+      id_nivel: 6, // Define o nível como 6
+      id_status: 1, // Define o status como 1
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -730,11 +717,11 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     const code = await Code.create({
       type_code: 1,
       code: codigoAleatorio,
-      id_user: novoUsuario.id_user,
+      id_user: novoUsuario.id_perfil_user,
     });
 
     const tokenUsuario = await Token.create({
-      id_user: novoUsuario.id_user,
+      id_user: novoUsuario.id_perfil_user,
       token: uuidv4(),
     });
 
@@ -743,7 +730,7 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
       logo_capa: 1,
       imovel: 1,
       publicacao: 1,
-      id_user: novoUsuario.id_user,
+      id_user: novoUsuario.id_perfil_user,
     });
 
     const qrData = "https://zonu.com.br/";
@@ -752,25 +739,84 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
     const novoQrcode = await Qrcode.create({
       qrcode: qrCodeURL,
       tipo: 2,
-      id_user: novoUsuario.id_user,
+      id_user: novoUsuario.id_perfil_user,
     });
 
     const response = {
       mensagem: "Usuário cadastrado com sucesso",
       usuarioCriado: {
-        id_user: novoUsuario.id_user,
+        id_perfil_user: novoUsuario.id_perfil_user,
         nome: novoUsuario.nome,
         email: novoUsuario.email,
         nivel: novoUsuario.id_nivel,
-        id_perfil: PerfilOriginario.id_perfil,
-        razao_social: PerfilOriginario.razao_social,
-        cnpj: PerfilOriginario.cnpj,
+        status: novoUsuario.id_status,
+        id_perfil: novoUsuario.id_perfil,
         token_unico: tokenUsuario.token,
         code: code.code,
       },
     };
 
     return res.status(202).send(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+const obterSubUsuarioImobiliaria = async (req, res, next) => {
+  try {
+    const { id_user } = req.params;
+
+    const imobiliariaPai = await PerfilUserImobiliaria.findOne({
+      where: { id_user },
+    });
+
+    if (!imobiliariaPai) {
+      return res
+        .status(404)
+        .send({ mensagem: "Imobiliária pai não encontrada." });
+    }
+
+    const subUsuarios = await PerfilUserImobiliaria.findAll({
+      where: {
+        id_user: id_user,
+        id_nivel: 6, // Nível dos subusuários
+        id_status: 1,
+      },
+      include: [
+        {
+          model: Perfil,
+          as: "perfil",
+        },
+        {
+          model: Status,
+          as: "status", // Incluindo status
+        },
+      ],
+    });
+
+    if (!subUsuarios || subUsuarios.length === 0) {
+      return res
+        .status(404)
+        .send({
+          mensagem: "Nenhum subusuário encontrado para esta imobiliária pai.",
+        });
+    }
+
+    const response = {
+      mensagem: "Subusuários encontrados com sucesso",
+      subUsuarios: subUsuarios.map((usuario) => ({
+        id_perfil_user: usuario.id_perfil_user,
+        nome: usuario.nome,
+        sobrenome: usuario.sobrenome,
+        email: usuario.email,
+        id_perfil: usuario.id_perfil,
+        id_nivel: usuario.id_nivel,
+        id_status: usuario.id_status,
+      })),
+    };
+
+    return res.status(200).send(response);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ error: error.message });
@@ -1780,5 +1826,6 @@ module.exports = {
   atualizarDadosUsuario,
   editarUsuarioSimples,
   editarCliente,
-  cadastrarPessoaFisica
+  cadastrarPessoaFisica,
+  obterSubUsuarioImobiliaria
 };

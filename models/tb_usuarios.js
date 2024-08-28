@@ -69,5 +69,4 @@ Usuario.belongsTo(Plano, {
   foreignKeyConstraint: true,
 });
 
-
 module.exports = Usuario;

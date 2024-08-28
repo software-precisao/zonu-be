@@ -15,7 +15,7 @@ router.put('/edit/trocar-senha', userController.trocaSenhaporEmail);
 router.post('/valida-code', userController.validaCode);
 
 
-//Cadastro de usuários
+//Cadastro de usuÃ¡rios
 router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioAdministrador);
 router.post("/cadastro-construtora", uploadFields, userController.cadastrarUsuarioConstrutora);
 router.post("/cadastro-imobiliaria", uploadFields, userController.cadastrarUsuarioImobiliaria);
@@ -24,6 +24,9 @@ router.post("/cadastro-corretor", uploadFields, userController.cadastrarUsuarioC
 router.post("/cadastro-vip", uploadFields, userController.cadastrarUsuarioVip);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);
 router.post("/cadastro-pessoa-fisica", uploadFields, userController.cadastrarPessoaFisica)
+
+
+router.get('/subusuarios/:id_user', userController.obterSubUsuarioImobiliaria);
 
 //Envio de documentos
 router.put("/enviodoc-creci/:id_user", uploadFields, userController.atualizarCreci);
