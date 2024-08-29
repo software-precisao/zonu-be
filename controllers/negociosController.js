@@ -97,6 +97,30 @@ const updateNegocio = async (req, res) => {
   }
 };
 
+const updateNegocioParaEtapa = async (req, res) => {
+  try {
+    const { id_negocio } = req.params;
+    const { id_etapa } = req.body;
+
+    if (!id_etapa) {
+      return res.status(400).json({ message: "id_etapa é obrigatório" });
+    }
+
+    const negocio = await Negocio.findByPk(id_negocio);
+    if (!negocio) {
+      return res.status(404).json({ message: "Negócio não encontrado" });
+    }
+
+    negocio.id_etapa = id_etapa;
+    await negocio.save();
+
+    return res.status(200).json(negocio);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
 const deleteNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
@@ -117,4 +141,5 @@ module.exports = {
   createNegocio,
   updateNegocio,
   deleteNegocio,
+  updateNegocioParaEtapa
 };

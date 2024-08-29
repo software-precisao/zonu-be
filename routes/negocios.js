@@ -8,6 +8,9 @@ router.post("/cadastrar", negociosController.createNegocio);
 
 router.put("/editar/:id_negocio", negociosController.updateNegocio);
 
+router.put('/negocios/:id_negocio/mover-etapa', negociosController.updateNegocioParaEtapa);
+
+
 router.delete("/deletar/:id_negocio", negociosController.deleteNegocio);
 
 module.exports = router;
