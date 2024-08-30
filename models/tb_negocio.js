@@ -42,22 +42,24 @@ const Negocio = conn.define(
 
 Negocio.belongsTo(Usuario, {
   foreignKey: "id_user",
-  as: "Usuario" 
+  as: "Usuario",
 });
 
 Negocio.belongsTo(Etapa, {
   foreignKey: "id_etapa",
-  as: "Etapa" 
+  as: "Etapa",
+  onDelete: "CASCADE", 
+  onUpdate: "CASCADE"  
 });
 
 Negocio.belongsTo(NivelInteresse, {
   foreignKey: "id_nivel_interesse",
-  as: "NivelInteresse" 
+  as: "NivelInteresse",
 });
 
 Negocio.belongsTo(Cliente, {
   foreignKey: "id_cliente",
-  as: "Cliente" 
+  as: "Cliente",
 });
 
 Negocio.belongsTo(NovoImovel, {
