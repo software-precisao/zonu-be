@@ -1,6 +1,7 @@
 const Funil = require("../models/tb_funil");
 const Etapa = require("../models/tb_etapa");
 const Usuario = require("../models/tb_usuarios");
+const { where } = require("sequelize");
 
 const criarFunil = async (req, res) => {
   try {
@@ -82,15 +83,20 @@ const atualizarFunil = async (req, res) => {
 
     if (atualizado) {
       if (Array.isArray(etapas)) {
-        await Etapa.destroy({ where: { id_funil } });
-
         for (const etapa of etapas) {
-          await Etapa.create({
-            nome_etapa: etapa.nome_etapa,
-            dias_limpeza: etapa.dias_limpeza,
-            descricao: etapa.descricao,
-            id_funil: id_funil,
-          });
+          await Etapa.update(
+            {
+              nome_etapa: etapa.nome_etapa,
+              dias_limpeza: etapa.dias_limpeza,
+              descricao: etapa.descricao,
+              id_funil: id_funil,
+            },
+            {
+              where: {
+                id_etapa: etapa.id_etapa,
+              },
+            }
+          );
         }
       }
 
