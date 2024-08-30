@@ -33,6 +33,8 @@ const Controle = require("../models/tb_controle_teste");
 const LinkTemporario = require("../models/tb_links_temporarios");
 const PerfilUserImobiliaria = require("../models/tb_perfil_user_imobiliaria");
 const Status = require("../models/tb_status");
+const Cliente = require("../models/tb_clientes");
+const Funil = require("../models/tb_funil");
 
 //POST de usuários
 
@@ -1788,6 +1790,8 @@ const excluirUsuario = async (req, res, next) => {
       Condominio,
       Controle,
       LinkTemporario,
+      Cliente,
+      Funil,
     ];
 
     for (const tabela of tabelas) {
