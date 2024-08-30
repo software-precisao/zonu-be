@@ -26,7 +26,7 @@ const Cliente = conn.define("tb_clientes", {
   },
   id_user: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   nome: {
     type: DataTypes.STRING,
@@ -124,6 +124,7 @@ Cliente.belongsTo(Usuario, {
   foreignKey: "id_user",
   as: "Usuario",
   foreignKeyConstraint: true,
+  onDelete: "SET NULL"
 });
 
 module.exports = Cliente;
