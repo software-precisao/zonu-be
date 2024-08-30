@@ -685,7 +685,6 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
   }
 };
 
-
 const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
     const usuarioExistente = await PerfilUserImobiliaria.findOne({
@@ -796,11 +795,9 @@ const obterSubUsuarioImobiliaria = async (req, res, next) => {
     });
 
     if (!subUsuarios || subUsuarios.length === 0) {
-      return res
-        .status(404)
-        .send({
-          mensagem: "Nenhum subusuário encontrado para esta imobiliária pai.",
-        });
+      return res.status(404).send({
+        mensagem: "Nenhum subusuário encontrado para esta imobiliária pai.",
+      });
     }
 
     const response = {
@@ -1781,21 +1778,27 @@ const excluirUsuario = async (req, res, next) => {
   try {
     const id_user = req.params.id_user;
 
-    await Qrcode.destroy({ where: { id_user } });
-    await Token.destroy({ where: { id_user } });
-    await Code.destroy({ where: { id_user } });
-    await Perfil.destroy({ where: { id_user } });
-    await Progress.destroy({ where: { id_user } });
-    await Imovel.destroy({ where: { id_user } });
-    await Condominio.destroy({ where: { id_user } });
+    const tabelas = [
+      Qrcode,
+      Token,
+      Code,
+      Perfil,
+      Progress,
+      Imovel,
+      Condominio,
+      Controle,
+      LinkTemporario,
+    ];
 
-    await Controle.destroy({ where: { id_user } });
-    await LinkTemporario.destroy({ where: { id_user } });
+    for (const tabela of tabelas) {
+      await tabela.destroy({ where: { id_user } });
+    }
 
     const usuario = await User.findByPk(id_user);
     if (!usuario) {
       return res.status(404).send({ message: "Usuário não encontrado" });
     }
+
     await usuario.destroy();
 
     return res.status(202).send({ mensagem: "Usuário excluído com sucesso!" });
@@ -1827,5 +1830,5 @@ module.exports = {
   editarUsuarioSimples,
   editarCliente,
   cadastrarPessoaFisica,
-  obterSubUsuarioImobiliaria
+  obterSubUsuarioImobiliaria,
 };
