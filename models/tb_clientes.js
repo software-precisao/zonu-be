@@ -124,7 +124,8 @@ Cliente.belongsTo(Usuario, {
   foreignKey: "id_user",
   as: "Usuario",
   foreignKeyConstraint: true,
-  onDelete: "SET NULL"
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 module.exports = Cliente;

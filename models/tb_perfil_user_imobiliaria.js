@@ -61,6 +61,8 @@ PerfilUserImobiliaria.belongsTo(Perfil, {
 PerfilUserImobiliaria.belongsTo(Usuario, {
   foreignKey: "id_user",
   as: "usuario",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 PerfilUserImobiliaria.belongsTo(Status, {
