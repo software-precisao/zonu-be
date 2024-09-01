@@ -83,6 +83,17 @@ const atualizarFunil = async (req, res) => {
     );
 
     if (atualizado) {
+      const etapasExistentes = await Etapa.findAll({ where: { id_funil } });
+
+      const etapasParaRemover = etapasExistentes.filter(
+        (etapaExistente) =>
+          !etapas.some((etapa) => etapa.id_etapa === etapaExistente.id_etapa)
+      );
+
+      for (const etapa of etapasParaRemover) {
+        await etapa.destroy();
+      }
+
       if (Array.isArray(etapas)) {
         for (const etapa of etapas) {
           if (etapa.id_etapa) {
@@ -124,6 +135,7 @@ const atualizarFunil = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 const excluirFunil = async (req, res) => {
