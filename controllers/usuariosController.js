@@ -393,6 +393,8 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       cep: req.body.cep,
       creci: `/documento/${filenameCreci}`,
       logo: `/logo/${filenameLogo}`,
+      cnh: req.body.cnh,
+      rg: req.body.rg,
       endereco: req.body.endereco,
       termos: "S",
       numero: req.body.numero,
