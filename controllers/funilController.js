@@ -76,6 +76,7 @@ const atualizarFunil = async (req, res) => {
     const { id_funil } = req.params;
     const { nome_funil, dias_limpeza, descricao, etapas, id_user } = req.body;
 
+    // Atualiza os dados do funil
     const [atualizado] = await Funil.update(
       { nome_funil, dias_limpeza, descricao, id_user },
       { where: { id_funil } }
@@ -84,19 +85,30 @@ const atualizarFunil = async (req, res) => {
     if (atualizado) {
       if (Array.isArray(etapas)) {
         for (const etapa of etapas) {
-          await Etapa.update(
-            {
+          if (etapa.id_etapa) {
+            // Se id_etapa existir, atualiza a etapa
+            await Etapa.update(
+              {
+                nome_etapa: etapa.nome_etapa,
+                dias_limpeza: etapa.dias_limpeza,
+                descricao: etapa.descricao,
+                id_funil: id_funil,
+              },
+              {
+                where: {
+                  id_etapa: etapa.id_etapa,
+                },
+              }
+            );
+          } else {
+            // Se id_etapa for undefined, cria uma nova etapa
+            await Etapa.create({
               nome_etapa: etapa.nome_etapa,
               dias_limpeza: etapa.dias_limpeza,
               descricao: etapa.descricao,
               id_funil: id_funil,
-            },
-            {
-              where: {
-                id_etapa: etapa.id_etapa,
-              },
-            }
-          );
+            });
+          }
         }
       }
 
@@ -112,6 +124,7 @@ const atualizarFunil = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const excluirFunil = async (req, res) => {
   try {

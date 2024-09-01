@@ -33,18 +33,23 @@ const Funil = conn.define(
 
 Funil.belongsTo(Usuario, {
   foreignKey: "id_user",
-  as: "Usuario" 
+  as: "Usuario",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
-
 
 Funil.hasMany(Etapa, {
   foreignKey: 'id_funil',
   as: 'etapas',
   onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
+
 Etapa.belongsTo(Funil, {
   foreignKey: 'id_funil',
-  as: 'funil'
+  as: 'funil',
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 module.exports = Funil;

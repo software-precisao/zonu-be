@@ -43,13 +43,15 @@ const Negocio = conn.define(
 Negocio.belongsTo(Usuario, {
   foreignKey: "id_user",
   as: "Usuario",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 Negocio.belongsTo(Etapa, {
   foreignKey: "id_etapa",
   as: "Etapa",
-  onDelete: "CASCADE", 
-  onUpdate: "CASCADE"  
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 Negocio.belongsTo(NivelInteresse, {
@@ -60,6 +62,8 @@ Negocio.belongsTo(NivelInteresse, {
 Negocio.belongsTo(Cliente, {
   foreignKey: "id_cliente",
   as: "Cliente",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 });
 
 Negocio.belongsTo(NovoImovel, {

@@ -32,4 +32,6 @@ const Etapa = conn.define(
   { freezeTableName: true }
 );
 
+
+
 module.exports = Etapa;
