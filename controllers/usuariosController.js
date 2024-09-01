@@ -713,6 +713,8 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
       id_status: 1, // Define o status como 1
     });
 
+    // Geração de código e token
+     /*
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
 
     const code = await Code.create({
@@ -742,7 +744,7 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
       tipo: 2,
       id_user: novoUsuario.id_perfil_user,
     });
-
+*/
     const response = {
       mensagem: "Usuário cadastrado com sucesso",
       usuarioCriado: {
@@ -752,8 +754,8 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
         nivel: novoUsuario.id_nivel,
         status: novoUsuario.id_status,
         id_perfil: novoUsuario.id_perfil,
-        token_unico: tokenUsuario.token,
-        code: code.code,
+        //token_unico: tokenUsuario.token,
+        //code: code.code,
       },
     };
 
