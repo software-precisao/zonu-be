@@ -25,5 +25,10 @@ Proximidades.belongsTo(Usuario, {
     foreignKeyConstraint: true,
 });
 
+Usuario.hasMany(Proximidades, {
+    foreignKey: "id_user",
+    constraints: true,
+});
+
 
 module.exports = Proximidades;

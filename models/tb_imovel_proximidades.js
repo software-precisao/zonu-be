@@ -12,11 +12,11 @@ const ProximidadesImovel = conn.define("tb_imovel_proximidades", {
     },
     id_proximidades: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
     },
     id_imovel: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
     },
 
 

@@ -467,11 +467,10 @@ const editarImovel = async (req, res) => {
         )
       );
     }
-
     let proximidades = [];
     try {
-      if (req.body.id_proximidade) {
-        proximidades = JSON.parse(req.body.id_proximidade).filter(
+      if (req.body.id_proximidades) {
+        proximidades = JSON.parse(req.body.id_proximidades).filter(
           (id) => id > 0
         );
       }
@@ -494,16 +493,21 @@ const editarImovel = async (req, res) => {
           .status(400)
           .send({ mensagem: "Uma ou mais proximidades são inválidas" });
       }
-
       await Proximidades.destroy({ where: { id_imovel: id_imovel } });
 
       await Promise.all(
-        proximidades.map((dado) =>
-          Proximidades.create({
-            id_proximidade: dado,
-            id_imovel: id_imovel,
+        proximidades
+          .filter((d) => !!d)
+          .map((dado) => {
+            console.log(`Cadastrando proximidade de id ${dado} -
+            ${typeof dado} - ${id_imovel}
+            `);
+
+            return Proximidades.create({
+              id_proximidades: Number(dado),
+              id_imovel: id_imovel,
+            });
           })
-        )
       );
     }
 
