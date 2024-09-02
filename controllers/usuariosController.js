@@ -374,6 +374,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
     const filenameLogo = req.file ? req.file.filename : "default-logo.png";
+    const filenameDoc = req.file ? req.file.filename : "default-documento.png";
 
     const novoUsuario = await User.create({
       nome: req.body.nome,
@@ -393,8 +394,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       cep: req.body.cep,
       creci: `/documento/${filenameCreci}`,
       logo: `/logo/${filenameLogo}`,
-      cnh: req.body.cnh,
-      rg: req.body.rg,
+      doc_ofc: `/documento/${filenameDoc}`,
       endereco: req.body.endereco,
       termos: "S",
       numero: req.body.numero,
@@ -1356,6 +1356,79 @@ const atualizarDocCnpj = async (req, res, next) => {
   }
 };
 
+const atualizarFilenameDoc = async (req, res, next) => {
+  try {
+    const { id_user } = req.params;
+
+    const usuario = await Usuario.findByPk(id_user);
+
+    if (!usuario) {
+      return res.status(404).send({
+        mensagem: "Usuário não encontradoo.",
+      });
+    }
+
+    const filenameDoc =
+      req.files && req.files["doc_ofc"]
+        ? req.files["doc_ofc"][0].filename
+        : "default-doc_ofc.pdf";
+
+    const perfil = await Perfil.findOne({ where: { id_user: id_user } });
+
+    if (!perfil) {
+      return res.status(404).send({
+        mensagem: "Perfil não encontrado.",
+      });
+    }
+
+    perfil.name_doc = `/documento/${filenameDoc}`;
+    await perfil.save();
+
+    const htmlFilePath = path.join(
+      __dirname,
+      "../template/aviso/documentosEnviados.html"
+    );
+    let htmlContent = await fs.readFile(htmlFilePath, "utf8");
+
+    htmlContent = htmlContent
+      .replace("{{nome}}", usuario.nome)
+      .replace("{{email}}", usuario.email);
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        ciphers: "TLSv1",
+      },
+    });
+
+    let email = usuario.email;
+
+    let mailOptions = {
+      from: `"Atendimento Zonu" ${process.env.EMAIL_FROM}`,
+      to: email,
+      subject: "✅ Documentos Recebidos!",
+      html: htmlContent,
+    };
+
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Mensagem enviada: %s", info.messageId);
+
+    return res.status(200).send({
+      mensagem: "DOCUMENTO atualizado com sucesso!",
+      document: perfil.doc_oficial,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
 const editarUsuarioSimples = async (req, res, next) => {
   try {
     const { id_user } = req.params;
@@ -1839,4 +1912,5 @@ module.exports = {
   editarCliente,
   cadastrarPessoaFisica,
   obterSubUsuarioImobiliaria,
+  atualizarFilenameDoc
 };

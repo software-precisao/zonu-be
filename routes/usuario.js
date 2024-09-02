@@ -31,6 +31,8 @@ router.get('/subusuarios/:id_user', userController.obterSubUsuarioImobiliaria);
 //Envio de documentos
 router.put("/enviodoc-creci/:id_user", uploadFields, userController.atualizarCreci);
 router.put("/enviodoc-cnpj/:id_user", uploadFields, userController.atualizarDocCnpj);
+router.put("/enviodoc_ofc/:id_user", uploadFields, userController.atualizarFilenameDoc);
+
 
 router.put("/editar-simples/:id_user", uploadFields, (req, res, next) => {
     next();

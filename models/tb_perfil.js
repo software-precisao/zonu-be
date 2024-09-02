@@ -33,17 +33,13 @@ const Perfil = conn.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    cnh: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    rg: {
+    doc_ofc: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     logo: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     capa: {
       type: DataTypes.STRING,

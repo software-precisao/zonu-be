@@ -13,6 +13,8 @@ const storage = multer.diskStorage({
       folder = "documento";
     } else if (file.fieldname === "doc_cnpj") {
       folder = "documento";
+    } else if (file.fieldname === "doc_ofc") {
+      folder = "documento";
     } else if (file.fieldname === "foto") {
       folder = "foto";
     } else {
