@@ -43,6 +43,7 @@ const uploadFields = multer({
   { name: "avatar", maxCount: 1 },
   { name: "creci", maxCount: 1 },
   { name: "doc_cnpj", maxCount: 1 },
+  { name: "doc_ofc", maxCount: 1 },
   { name: "logo", maxCount: 1 },
   { name: "capa", maxCount: 1 },
   { name: "foto", maxCount: 10 },

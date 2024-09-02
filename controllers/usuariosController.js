@@ -1381,7 +1381,7 @@ const atualizarFilenameDoc = async (req, res, next) => {
       });
     }
 
-    perfil.name_doc = `/documento/${filenameDoc}`;
+    perfil.doc_ofc = `/documento/${filenameDoc}`;
     await perfil.save();
 
     const htmlFilePath = path.join(
