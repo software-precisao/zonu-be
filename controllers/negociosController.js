@@ -21,7 +21,7 @@ const getNegocios = async (req, res) => {
         {
           model: Etapa,
           as: "Etapa",
-          attributes: ["id_etapa", "nome_etapa"],
+          attributes: ["id_etapa", "nome_etapa", "dias_limpeza", "descricao"],
         },
         {
           model: NivelInteresse,
