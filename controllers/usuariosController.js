@@ -373,8 +373,11 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
-    const filenameLogo = req.file ? req.file.filename : "default-logo.png";
     const filenameDoc = req.file ? req.file.filename : "default-documento.png";
+    
+    const filenameYouLogo = req.files && req.files["logo"]
+        ? req.files["logo"][0].filename
+        : "default-logo.png";
 
     const novoUsuario = await User.create({
       nome: req.body.nome,
@@ -393,7 +396,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       telefone: req.body.telefone,
       cep: req.body.cep,
       creci: `/documento/${filenameCreci}`,
-      logo: `/logo/${filenameLogo}`,
+      logo: `/logo/${filenameYouLogo}`,
       doc_ofc: `/documento/${filenameDoc}`,
       endereco: req.body.endereco,
       termos: "S",
@@ -541,7 +544,9 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
-    const filenameLogo = req.file ? req.file.filename : "default-logo.png";
+    const filenameYouLogo = req.files && req.files["logo"]
+        ? req.files["logo"][0].filename
+        : "default-logo.png";
     const filenameCapa = req.file ? req.file.filename : "default-capa.png";
     const filenameCnpj = req.file ? req.file.filename : "default-cnpj.pdf";
 
@@ -563,7 +568,7 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
       telefone: req.body.telefone,
       cep: req.body.cep,
       creci: `/documento/${filenameCreci}`,
-      logo: `/logo/${filenameLogo}`,
+      logo: `/logo/${filenameYouLogo}`,
       capa: `/capa/${filenameCapa}`,
       doc_cnpj: `/documento/${filenameCnpj}`,
       endereco: req.body.endereco,
