@@ -19,14 +19,17 @@ router.post('/valida-code', userController.validaCode);
 router.post("/cadastro-administrador", uploadFields, userController.cadastrarUsuarioAdministrador);
 router.post("/cadastro-construtora", uploadFields, userController.cadastrarUsuarioConstrutora);
 router.post("/cadastro-imobiliaria", uploadFields, userController.cadastrarUsuarioImobiliaria);
-router.post("/cadastro-imobiliaria-user", uploadFields, userController.cadastrarSubUsuarioImobiliaria);
 router.post("/cadastro-corretor", uploadFields, userController.cadastrarUsuarioCorretor);
 router.post("/cadastro-vip", uploadFields, userController.cadastrarUsuarioVip);
 router.post("/cadastro-equipe", uploadFields, userController.cadastrarEquipeZonu);
 router.post("/cadastro-pessoa-fisica", uploadFields, userController.cadastrarPessoaFisica)
 
 
+router.post("/cadastro-imobiliaria-user", uploadFields, userController.cadastrarSubUsuarioImobiliaria);
 router.get('/subusuarios/:id_user', userController.obterSubUsuarioImobiliaria);
+router.put('/subusuario/editar/:id_perfil_user', userController.editarSubUsuarioImobiliaria);
+router.delete('/subusuario/deletar/:id_perfil_user', userController.deletarSubUsuarioImobiliaria);
+
 
 //Envio de documentos
 router.put("/enviodoc-creci/:id_user", uploadFields, userController.atualizarCreci);
