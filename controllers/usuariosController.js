@@ -208,6 +208,7 @@ const cadastrarPessoaFisica = async (req, res, next) => {
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
     const filenameLogo = req.file ? req.file.filename : "default-logo.png";
+    const filenameDoc = req.file ? req.file.filename : "default-documento.png";
 
     const novoUsuario = await User.create({
       nome: req.body.nome,
@@ -215,7 +216,6 @@ const cadastrarPessoaFisica = async (req, res, next) => {
       email: req.body.email,
       senha: hashedPassword,
       avatar: `/avatar/${filename}`,
-      id_plano: req.body.id_plano,
       id_status: 2,
       id_nivel: 7,
       initial: 1,
@@ -227,6 +227,7 @@ const cadastrarPessoaFisica = async (req, res, next) => {
       cep: req.body.cep,
       creci: `/documento/${filenameCreci}`,
       logo: `/logo/${filenameLogo}`,
+      doc_ofc: `/documento/${filenameDoc}`,
       endereco: req.body.endereco,
       termos: "S",
       numero: req.body.numero,
@@ -234,13 +235,6 @@ const cadastrarPessoaFisica = async (req, res, next) => {
       cidade: req.body.cidade,
       estado: req.body.estado,
       bairro: req.body.bairro,
-      id_user: novoUsuario.id_user,
-    });
-
-    const novoTeste = await ControleTeste.create({
-      data_inicio: format(new Date(), "yyyy-MM-dd"),
-      status: 1,
-      id_plano: novoUsuario.id_plano,
       id_user: novoUsuario.id_user,
     });
 
@@ -287,7 +281,6 @@ const cadastrarPessoaFisica = async (req, res, next) => {
         sobrenome: novoUsuario.sobrenome,
         email: novoUsuario.email,
         avatar: novoUsuario.avatar,
-        id_plano: novoUsuario.id_plano,
         id_nivel: novoUsuario.id_nivel,
         id_status: novoUsuario.id_status,
       },
@@ -339,7 +332,6 @@ const cadastrarPessoaFisica = async (req, res, next) => {
         cnpj: novoperfil.cnpj,
         token_unico: tokenUsuario.token,
         code: code.code,
-        periodo: novoTeste.id_controle,
       },
     };
 
@@ -818,7 +810,6 @@ const obterSubUsuarioImobiliaria = async (req, res, next) => {
         nome: usuario.nome,
         sobrenome: usuario.sobrenome,
         email: usuario.email,
-        id_perfil: usuario.id_perfil,
         id_nivel: usuario.id_nivel,
         id_status: usuario.id_status,
       })),
@@ -830,6 +821,35 @@ const obterSubUsuarioImobiliaria = async (req, res, next) => {
     return res.status(500).send({ error: error.message });
   }
 };
+
+
+const deletarSubUsuarioImobiliaria = async (req, res, next) => {
+  try {
+    const { id_perfil_user } = req.params;
+
+    const usuarioExistente = await PerfilUserImobiliaria.findOne({
+      where: { id_perfil_user },
+    });
+
+    if (!usuarioExistente) {
+      return res
+        .status(404)
+        .send({ mensagem: "Subusuário não encontrado." });
+    }
+
+    await usuarioExistente.destroy(); 
+
+    return res.status(200).send({
+      mensagem: "Subusuário deletado com sucesso",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+
+
 
 const cadastrarUsuarioAdministrador = async (req, res, next) => {
   try {
@@ -1917,5 +1937,7 @@ module.exports = {
   editarCliente,
   cadastrarPessoaFisica,
   obterSubUsuarioImobiliaria,
-  atualizarFilenameDoc
+  atualizarFilenameDoc,
+  editarSubUsuarioImobiliaria,
+  deletarSubUsuarioImobiliaria
 };
