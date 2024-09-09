@@ -35,6 +35,7 @@ const PerfilUserImobiliaria = require("../models/tb_perfil_user_imobiliaria");
 const Status = require("../models/tb_status");
 const Cliente = require("../models/tb_clientes");
 const Funil = require("../models/tb_funil");
+const { Op } = require("sequelize");
 
 //POST de usuários
 
@@ -366,8 +367,9 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
     const filenameDoc = req.file ? req.file.filename : "default-documento.png";
-    
-    const filenameYouLogo = req.files && req.files["logo"]
+
+    const filenameYouLogo =
+      req.files && req.files["logo"]
         ? req.files["logo"][0].filename
         : "default-logo.png";
 
@@ -536,7 +538,8 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(req.body.senha, 10);
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
-    const filenameYouLogo = req.files && req.files["logo"]
+    const filenameYouLogo =
+      req.files && req.files["logo"]
         ? req.files["logo"][0].filename
         : "default-logo.png";
     const filenameCapa = req.file ? req.file.filename : "default-capa.png";
@@ -688,6 +691,8 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
 
 const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
+    console.log(req.body);
+    console.log("teste");
     const usuarioExistente = await PerfilUserImobiliaria.findOne({
       where: { email: req.body.email },
     });
@@ -711,9 +716,9 @@ const cadastrarSubUsuarioImobiliaria = async (req, res, next) => {
       id_nivel: 6, // Define o nível como 6
       id_status: 1, // Define o status como 1
     });
-
+    console.log(req.body.id_user);
     // Geração de código e token
-     /*
+    /*
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
 
     const code = await Code.create({
@@ -831,13 +836,14 @@ const editarSubUsuarioImobiliaria = async (req, res, next) => {
     });
 
     if (!usuarioExistente) {
-      return res
-        .status(404)
-        .send({ mensagem: "Subusuário não encontrado." });
+      return res.status(404).send({ mensagem: "Subusuário não encontrado." });
     }
 
     const outroUsuario = await PerfilUserImobiliaria.findOne({
-      where: { email: req.body.email, id_perfil_user: { [Op.ne]: id_perfil_user } },
+      where: {
+        email: req.body.email,
+        id_perfil_user: { [Op.ne]: id_perfil_user },
+      },
     });
 
     if (outroUsuario) {
@@ -850,7 +856,6 @@ const editarSubUsuarioImobiliaria = async (req, res, next) => {
       nome: req.body.nome || usuarioExistente.nome,
       sobrenome: req.body.sobrenome || usuarioExistente.sobrenome,
       email: req.body.email || usuarioExistente.email,
-      id_perfil: req.body.id_perfil || usuarioExistente.id_perfil,
     };
 
     if (req.body.senha) {
@@ -863,9 +868,9 @@ const editarSubUsuarioImobiliaria = async (req, res, next) => {
       mensagem: "Subusuário atualizado com sucesso",
       usuarioAtualizado: {
         id_perfil_user: usuarioExistente.id_perfil_user,
-        nome: usuarioExistente.nome,
-        sobrenome: usuarioExistente.sobrenome,
-        email: usuarioExistente.email,
+        nome: novosDados.nome,
+        sobrenome: novosDados.sobrenome,
+        email: novosDados.email,
       },
     });
   } catch (error) {
@@ -873,7 +878,6 @@ const editarSubUsuarioImobiliaria = async (req, res, next) => {
     return res.status(500).send({ error: error.message });
   }
 };
-
 
 const deletarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
@@ -884,12 +888,10 @@ const deletarSubUsuarioImobiliaria = async (req, res, next) => {
     });
 
     if (!usuarioExistente) {
-      return res
-        .status(404)
-        .send({ mensagem: "Subusuário não encontrado." });
+      return res.status(404).send({ mensagem: "Subusuário não encontrado." });
     }
 
-    await usuarioExistente.destroy(); 
+    await usuarioExistente.destroy();
 
     return res.status(200).send({
       mensagem: "Subusuário deletado com sucesso",
@@ -899,9 +901,6 @@ const deletarSubUsuarioImobiliaria = async (req, res, next) => {
     return res.status(500).send({ error: error.message });
   }
 };
-
-
-
 
 const cadastrarUsuarioAdministrador = async (req, res, next) => {
   try {
@@ -1991,5 +1990,5 @@ module.exports = {
   obterSubUsuarioImobiliaria,
   atualizarFilenameDoc,
   editarSubUsuarioImobiliaria,
-  deletarSubUsuarioImobiliaria
+  deletarSubUsuarioImobiliaria,
 };
