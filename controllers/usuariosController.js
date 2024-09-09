@@ -822,6 +822,58 @@ const obterSubUsuarioImobiliaria = async (req, res, next) => {
   }
 };
 
+const editarSubUsuarioImobiliaria = async (req, res, next) => {
+  try {
+    const { id_perfil_user } = req.params;
+
+    const usuarioExistente = await PerfilUserImobiliaria.findOne({
+      where: { id_perfil_user },
+    });
+
+    if (!usuarioExistente) {
+      return res
+        .status(404)
+        .send({ mensagem: "Subusuário não encontrado." });
+    }
+
+    const outroUsuario = await PerfilUserImobiliaria.findOne({
+      where: { email: req.body.email, id_perfil_user: { [Op.ne]: id_perfil_user } },
+    });
+
+    if (outroUsuario) {
+      return res.status(409).send({
+        mensagem: "Email já cadastrado, por favor insira um email diferente!",
+      });
+    }
+
+    const novosDados = {
+      nome: req.body.nome || usuarioExistente.nome,
+      sobrenome: req.body.sobrenome || usuarioExistente.sobrenome,
+      email: req.body.email || usuarioExistente.email,
+      id_perfil: req.body.id_perfil || usuarioExistente.id_perfil,
+    };
+
+    if (req.body.senha) {
+      novosDados.senha = await bcrypt.hash(req.body.senha, 10);
+    }
+
+    await usuarioExistente.update(novosDados);
+
+    return res.status(200).send({
+      mensagem: "Subusuário atualizado com sucesso",
+      usuarioAtualizado: {
+        id_perfil_user: usuarioExistente.id_perfil_user,
+        nome: usuarioExistente.nome,
+        sobrenome: usuarioExistente.sobrenome,
+        email: usuarioExistente.email,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
 
 const deletarSubUsuarioImobiliaria = async (req, res, next) => {
   try {
