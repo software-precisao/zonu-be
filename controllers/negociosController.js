@@ -30,8 +30,7 @@ const getNegocios = async (req, res) => {
         },
         {
           model: Cliente,
-          as: "Cliente",
-          attributes: ["id_cliente","nome"],
+          as: "Cliente"
         },
         {
           model: NovoImovel,
