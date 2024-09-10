@@ -35,12 +35,10 @@ const getNegocios = async (req, res) => {
         {
           model: NovoImovel,
           as: "NovoImovel",
-          attributes: ["id_imovel"],
         },
         {
           model: Usuario,
           as: "Usuario",
-          attributes: ["id_user", "nome"],
         },
       ],
     });
