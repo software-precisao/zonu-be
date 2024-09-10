@@ -12,17 +12,14 @@ const getClientes = async (req, res) => {
         {
           model: TipoCliente,
           as: "TipoCliente",
-          attributes: ["tipo_cliente"],
         },
         {
           model: Captacao,
           as: "Captacao",
-          attributes: ["origem_captacao"],
         },
         {
           model: CategoriaCliente,
           as: "CategoriaCliente",
-          attributes: ["categoria_cliente"],
         },
         {
           model: Usuario,
