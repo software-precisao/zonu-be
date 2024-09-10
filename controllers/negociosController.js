@@ -4,6 +4,9 @@ const Etapa = require("../models/tb_etapa");
 const NivelInteresse = require("../models/tb_niveis_interesse");
 const NovoImovel = require("../models/tb_imovel");
 const Usuario = require("../models/tb_usuarios");
+const TipoCliente = require("../models/tb_tipo_cliente");
+const Captacao = require("../models/tb_captacao");
+const CategoriaCliente = require("../models/tb_categoria_cliente");
 
 const getNegocios = async (req, res) => {
   try {
@@ -30,7 +33,24 @@ const getNegocios = async (req, res) => {
         },
         {
           model: Cliente,
-          as: "Cliente"
+          as: "Cliente",
+          include: [
+            {
+              model: TipoCliente,
+              as: "TipoCliente",
+              attributes: ["id_tipo_cliente", "tipo_cliente"], // Ajuste conforme seus campos
+            },
+            {
+              model: Captacao,
+              as: "Captacao",
+              attributes: ["id_captacao", "origem_captacao"], // Ajuste conforme seus campos
+            },
+            {
+              model: CategoriaCliente,
+              as: "CategoriaCliente",
+              attributes: ["id_categoria_cliente", "categoria_cliente"], // Ajuste conforme seus campos
+            },
+          ],
         },
         {
           model: NovoImovel,
