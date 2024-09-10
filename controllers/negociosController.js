@@ -38,17 +38,17 @@ const getNegocios = async (req, res) => {
             {
               model: TipoCliente,
               as: "TipoCliente",
-              attributes: ["id_tipo_cliente", "tipo_cliente"], // Ajuste conforme seus campos
+              attributes: ["id_tipo_cliente", "tipo_cliente"], 
             },
             {
               model: Captacao,
               as: "Captacao",
-              attributes: ["id_captacao", "origem_captacao"], // Ajuste conforme seus campos
+              attributes: ["id_captacao", "origem_captacao"], 
             },
             {
               model: CategoriaCliente,
               as: "CategoriaCliente",
-              attributes: ["id_categoria_cliente", "categoria_cliente"], // Ajuste conforme seus campos
+              attributes: ["id_categoria_cliente", "categoria_cliente"], 
             },
           ],
         },
