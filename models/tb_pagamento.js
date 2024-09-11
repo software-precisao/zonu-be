@@ -16,6 +16,10 @@ const Pagamento = conn.define("tb_pagamento_controle", {
         },
         allowNull: false,
     },
+    customerId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     status_pago: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

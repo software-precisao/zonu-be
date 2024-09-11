@@ -367,7 +367,6 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
     const filename = req.file ? req.file.filename : "default-avatar.png";
     const filenameCreci = req.file ? req.file.filename : "default-creci.pdf";
     const filenameDoc = req.file ? req.file.filename : "default-documento.png";
-
     const filenameYouLogo =
       req.files && req.files["logo"]
         ? req.files["logo"][0].filename
@@ -402,11 +401,58 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
       id_user: novoUsuario.id_user,
     });
 
+    // -----------------------------
+    // Integração com o Asaas
+    // -----------------------------
+    const tokenData = await TokenPayment.findOne();
+    const apiKey = tokenData.api_key;
+    const urlbase = tokenData.url_base;
+
+    // Dados que serão enviados para o Asaas
+    const customerPayload = {
+      name: `${req.body.nome} ${req.body.sobrenome}`,
+      email: req.body.email,
+      cpfCnpj: req.body.cpf,
+      phone: req.body.telefone,
+      mobilePhone: req.body.telefone,
+      postalCode: req.body.cep,
+      address: req.body.endereco,
+      addressNumber: req.body.numero,
+      complement: req.body.complemento,
+      province: req.body.bairro,
+    };
+
+    const asaasUrl = "https://www.asaas.com/api/v3/customers";
+    const asaasOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "access_token": apiKey,
+        "User-Agent": "chrome",
+      },
+      data: JSON.stringify(customerPayload),
+    };
+
+    // Faz a requisição para o Asaas
+    const asaasResponse = await axios(asaasUrl, asaasOptions);
+    const asaasData = asaasResponse.data;
+
+    if (!asaasResponse.status === 200) {
+      throw new Error('Erro ao criar o cliente no Asaas');
+    }
+
+    // Aqui você recebe o customerId retornado pelo Asaas
+    const customerId = asaasData.id;
+
+    // ------------------------------------------
+    // Salvar o customerId no ControleTeste
+    // ------------------------------------------
     const novoTeste = await ControleTeste.create({
       data_inicio: format(new Date(), "yyyy-MM-dd"),
       status: 1,
       id_plano: novoUsuario.id_plano,
       id_user: novoUsuario.id_user,
+      customerId: customerId, 
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -505,6 +551,7 @@ const cadastrarUsuarioCorretor = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
         periodo: novoTeste.id_controle,
+        customerId: customerId, // Envia o customerId gerado pelo Asaas na resposta
       },
     };
 
@@ -576,11 +623,55 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
       id_user: novoUsuario.id_user,
     });
 
+    // -----------------------------
+    // Integração com o Asaas
+    // -----------------------------
+
+    const tokenData = await TokenPayment.findOne();
+    const apiKey = tokenData.api_key;
+
+    // Dados que serão enviados para o Asaas
+    const customerPayload = {
+      name: req.body.razao_social,
+      email: req.body.email,
+      cpfCnpj: req.body.cnpj.replace(/[^0-9]/g, ""),
+      phone: req.body.telefone,
+      mobilePhone: req.body.telefone,
+      postalCode: req.body.cep,
+      address: req.body.endereco,
+      addressNumber: req.body.numero,
+      complement: req.body.complemento,
+      province: req.body.bairro,
+    };
+
+    const asaasUrl = "https://www.asaas.com/api/v3/customers";
+    const asaasOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "access_token": apiKey,
+        "User-Agent": "chrome",
+      },
+      data: JSON.stringify(customerPayload),
+    };
+
+    // Faz a requisição para o Asaas
+    const asaasResponse = await axios(asaasUrl, asaasOptions);
+    const asaasData = asaasResponse.data;
+
+    if (!asaasResponse.status === 200) {
+      throw new Error('Erro ao criar o cliente no Asaas');
+    }
+
+    // Aqui você recebe o customerId retornado pelo Asaas
+    const customerId = asaasData.id;
+
     const novoTeste = await ControleTeste.create({
       data_inicio: format(new Date(), "yyyy-MM-dd"),
       status: 1,
       id_plano: req.body.id_plano,
       id_user: novoUsuario.id_user,
+      customerId: customerId,
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
@@ -679,6 +770,7 @@ const cadastrarUsuarioImobiliaria = async (req, res, next) => {
         token_unico: tokenUsuario.token,
         code: code.code,
         periodo: novoTeste.id_controle,
+        customerId: customerId,
       },
     };
 

@@ -20,6 +20,10 @@ const Controle = conn.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    customerId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     id_plano: {
       type: DataTypes.INTEGER,
       allowNull: false,

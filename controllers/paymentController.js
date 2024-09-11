@@ -1,11 +1,11 @@
 const TokenPayment = require("../models/tb_token_payment");
 
+
 const criarPagamentoRecorrente = async (req, res) => {
   try {
     const fetch = await import('node-fetch').then(mod => mod.default);
     const { customerId, billingType, value, dueDate, nextDueDate, description, creditCard, cycle, creditCardHolderInfo } = req.body;
 
-    // Verificar se o customerId está presente e válido
     if (!customerId) {
       return res.status(400).send({ error: 'Customer ID é obrigatório.' });
     }
@@ -17,10 +17,8 @@ const criarPagamentoRecorrente = async (req, res) => {
     }
 
     const apiKey = tokenData.api_key;
-
-    // Adicionar log para verificar o token e o customerId
-    console.log('Token da API:', apiKey);
-    console.log('Customer ID:', customerId);
+    const environment = 'https://www.asaas.com/api/v3/';
+    const url = `${environment}payments`;
 
     // Configurar o payload com base no tipo de pagamento
     let payload = {
@@ -28,12 +26,15 @@ const criarPagamentoRecorrente = async (req, res) => {
       billingType,
       value,
       dueDate,
-      nextDueDate,
       cycle,
       description,
     };
 
-    if (billingType === 'CREDIT_CARD' && creditCard) {
+    if (billingType === 'CREDIT_CARD' || billingType === 'DEBIT_CARD') {
+      if (!creditCard) {
+        return res.status(400).send({ error: 'Dados do cartão são necessários para pagamento com cartão.' });
+      }
+
       payload.creditCard = {
         holderName: creditCard.holderName,
         number: creditCard.number,
@@ -44,19 +45,16 @@ const criarPagamentoRecorrente = async (req, res) => {
       payload.creditCardHolderInfo = creditCardHolderInfo;
     }
 
-    const url = 'https://sandbox.asaas.com/api/v3/payments';
     const options = {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'access_token': apiKey,
-        'User-Agent': 'chrome'
       },
       body: JSON.stringify(payload)
     };
 
-    // Fazer a requisição para a API do Asaas para criar o pagamento
     const response = await fetch(url, options);
     const data = await response.json();
 
@@ -67,13 +65,12 @@ const criarPagamentoRecorrente = async (req, res) => {
 
     // Se o pagamento for PIX, buscar o QR Code e o código de copia e cola
     if (billingType === 'PIX') {
-      const pixQrCodeUrl = `https://sandbox.asaas.com/api/v3/payments/${data.id}/pixQrCode`;
+      const pixQrCodeUrl = `${environment}payments/${data.id}/pixQrCode`;
       const pixQrCodeOptions = {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'access_token': apiKey,
-          'User-Agent': 'chrome'
         }
       };
 
