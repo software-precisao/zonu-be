@@ -183,7 +183,6 @@ app.use("/funil", rotaFunil)
 app.use("/logo", rotaLogo)
 app.use("/pessoasLigadas", rotaPessoasLigadas)
 app.use("/etapa", rotaEtapa)
-app.use("/referenciaPagamento", rotaReferenciaPagamento)
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
