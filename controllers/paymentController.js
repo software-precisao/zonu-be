@@ -1,4 +1,5 @@
 const TokenPayment = require("../models/tb_token_payment");
+const PaymentReference = require("../models/tb_pagamento");
 
 const criarPagamentoRecorrente = async (req, res) => {
   try {
@@ -144,7 +145,87 @@ const verificarPagamento = async (req, res) => {
   }
 };
 
+const salvarReferenciaPagamento = async (req, res) => {
+  const { id_user, id_cobranca } = req.body;
+
+  if (!id_user) {
+    return res.status(400).send({ error: "O ID do usuário é obrigatório." });
+  }
+
+  try {
+    const novaReferencia = await PaymentReference.create({
+      id_user,
+      id_cobranca,
+      status_pagamento: false,
+    });
+
+    return res.status(201).send({
+      mensagem: "Referência de pagamento salva com sucesso.",
+      novaReferencia,
+    });
+  } catch (error) {
+    return res.status(500).send({ error: "Erro ao salvar referência de pagamento." });
+  }
+};
+
+const consultarStatusPagamento = async (req, res) => {
+  const { id_user } = req.params;
+  
+  try {
+    const referenciaPagamento = await PaymentReference.findOne({
+      where: { id_user },
+    });
+
+    if (!referenciaPagamento) {
+      return res.status(404).send({
+        mensagem: "Referência de pagamento não encontrada para este usuário.",
+      });
+    }
+
+    return res.status(200).send({
+      mensagem: "Referência de pagamento encontrada.",
+      status_pagamento: referenciaPagamento.status_pagamento ? "Pago" : "Pendente",
+    });
+  } catch (error) {
+    return res.status(500).send({ error: "Erro ao consultar status de pagamento." });
+  }
+};
+
+
+const alterarStatusPagamento = async (req, res) => {
+  const { id_pagamento } = req.params; // ID do pagamento passado na URL
+  const { status_pago } = req.body; // Novo status passado no corpo da requisição
+
+  try {
+    const pagamento = await PaymentReference.findByPk(id_pagamento);
+
+    if (!pagamento) {
+      return res.status(404).send({
+        mensagem: "Pagamento não encontrado.",
+      });
+    }
+
+    pagamento.status_pago = status_pago;
+    await pagamento.save();
+
+    return res.status(200).send({
+      mensagem: "Status do pagamento atualizado com sucesso.",
+      pagamento,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "Erro ao atualizar o status do pagamento.",
+    });
+  }
+};
+
+
+
+
 module.exports = {
+  salvarReferenciaPagamento,
+  consultarStatusPagamento,
   criarPagamentoRecorrente,
   verificarPagamento,
+  alterarStatusPagamento
 };
