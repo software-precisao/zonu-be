@@ -107,7 +107,10 @@ const verificarPagamento = async (req, res) => {
 
     const apiKey = tokenData.api_key;
 
-    const url = `https://sandbox.asaas.com/api/v3/payments/${paymentId}`;
+    // Alterna a URL entre produção e sandbox
+    const environment = 'https://www.asaas.com/api/v3/';
+    const url = `${environment}payments/${paymentId}`;
+
     const options = {
       method: "GET",
       headers: {
@@ -130,6 +133,7 @@ const verificarPagamento = async (req, res) => {
       );
     }
 
+    // Retornar o status do pagamento
     res.send(data);
   } catch (error) {
     console.error(
