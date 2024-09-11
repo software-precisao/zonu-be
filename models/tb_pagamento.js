@@ -32,6 +32,12 @@ const Pagamento = conn.define("tb_pagamento_controle", {
         type: DataTypes.DATE,
         allowNull: true, 
     },
+    id_cobranca: {
+        autoIncrement: true,
+        allowNull: true,
+        primaryKey: true,
+      },
+    
 }, { freezeTableName: true });
 
 Usuario.hasMany(Pagamento, {
