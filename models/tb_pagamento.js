@@ -14,7 +14,7 @@ const Pagamento = conn.define(
       type: DataTypes.INTEGER,
       references: {
         model: Usuario,
-        key: "id_user",
+        key: "id_user"
       },
       allowNull: false,
     },
