@@ -22,14 +22,6 @@ const Pagamento = conn.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    data_inicio: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    data_vencimento: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     id_cobranca: {
       type: DataTypes.STRING,
       allowNull: true,

@@ -156,7 +156,7 @@ const salvarReferenciaPagamento = async (req, res) => {
     const novaReferencia = await PaymentReference.create({
       id_user,
       id_cobranca,
-      status_pagamento: false,
+      status_pago: 1,
     });
 
     return res.status(201).send({
@@ -164,7 +164,7 @@ const salvarReferenciaPagamento = async (req, res) => {
       novaReferencia,
     });
   } catch (error) {
-    return res.status(500).send({ error: "Erro ao salvar referência de pagamento." });
+    return res.status(500).send(error);
   }
 };
 
