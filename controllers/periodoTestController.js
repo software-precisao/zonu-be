@@ -53,14 +53,11 @@ const getControleById = async (req, res) => {
 // Update
 const updateControle = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { data_inicio, status, id_plano, id_user } = req.body;
-    const controle = await Controle.findByPk(id);
+    const { id_controle } = req.params;
+    const { status } = req.body;
+    const controle = await Controle.findByPk(id_controle);
     if (controle) {
-      controle.data_inicio = data_inicio;
       controle.status = status;
-      controle.id_plano = id_plano;
-      controle.id_user = id_user;
       await controle.save();
       res.status(200).json(controle);
     } else {
