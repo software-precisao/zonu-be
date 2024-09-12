@@ -1,5 +1,6 @@
 const TokenPayment = require("../models/tb_token_payment");
 const PaymentReference = require("../models/tb_pagamento");
+const Usuario = require("../models/tb_usuarios");
 
 
 const criarPagamentoRecorrente = async (req, res) => {
@@ -169,28 +170,39 @@ const salvarReferenciaPagamento = async (req, res) => {
   }
 };
 
-const consultarStatusPagamento = async (req, res) => {
-  const { id_user } = req.params;
-  
+const consultarTodosPagamentos = async (req, res) => {
+  const { id_user } = req.params; // ID do usuário passado na URL
+
   try {
-    const referenciaPagamento = await PaymentReference.findOne({
-      where: { id_user },
+    // Buscar todos os pagamentos relacionados ao usuário
+    const referenciasPagamento = await PaymentReference.findAll({
+      where: { id_user }, // Filtrar pelo ID do usuário
+      include: {
+        model: Usuario,
+        as: "usuario", // Incluir informações do usuário relacionadas
+      },
     });
 
-    if (!referenciaPagamento) {
+    // Verificar se há pagamentos para o usuário
+    if (referenciasPagamento.length === 0) {
       return res.status(404).send({
-        mensagem: "Referência de pagamento não encontrada para este usuário.",
+        mensagem: "Nenhuma referência de pagamento encontrada para este usuário.",
       });
     }
 
     return res.status(200).send({
-      mensagem: "Referência de pagamento encontrada.",
-      status_pagamento: referenciaPagamento.status_pagamento ? "Pago" : "Pendente",
+      mensagem: "Referências de pagamento encontradas.",
+      dados: referenciasPagamento, // Retornar todos os dados
     });
   } catch (error) {
-    return res.status(500).send({ error: "Erro ao consultar status de pagamento." });
+    console.error("Erro ao consultar todos os pagamentos: ", error); // Log para depuração
+    return res.status(500).send({
+      error: "Erro ao consultar todas as referências de pagamento.",
+      detalhes: error.message,
+    });
   }
 };
+
 
 
 const alterarStatusPagamento = async (req, res) => {
@@ -225,7 +237,7 @@ const alterarStatusPagamento = async (req, res) => {
 
 module.exports = {
   salvarReferenciaPagamento,
-  consultarStatusPagamento,
+  consultarTodosPagamentos,
   criarPagamentoRecorrente,
   verificarPagamento,
   alterarStatusPagamento
