@@ -16,6 +16,7 @@ const Descricao = require("../models/tb_descricao");
 const Complemento = require("../models/tb_complementos");
 const Publicacao = require("../models/tb_publicacao");
 const ImagemImovel = require("../models/tb_imagem_imovel");
+const Info = require("../models/tb_info_imovel");
 
 const getNegocios = async (req, res) => {
   try {
@@ -101,10 +102,31 @@ const getNegocios = async (req, res) => {
               as: "complemento",
               attributes: ["link_youtube", "link_apresentacao", "link_drive"],
             },
-            { 
+            {
               model: ImagemImovel,
               as: "fotos",
-              attributes: ["foto"] 
+              attributes: ["foto"],
+            },
+            {
+              model: Info,
+              as: "info",
+              attributes: [
+                "cod_referencia",
+                "corretor",
+                "agenciador",
+                "tipo",
+                "perfil_imovel",
+                "situacao_imovel",
+                "ano_construcao",
+                "incorporacao",
+                "posicao_solar",
+                "terreno",
+                "proximo_mar",
+                "averbado",
+                "escriturado",
+                "esquina",
+                "mobilia",
+              ],
             },
           ],
         },
