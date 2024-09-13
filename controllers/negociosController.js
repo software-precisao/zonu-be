@@ -7,6 +7,15 @@ const Usuario = require("../models/tb_usuarios");
 const TipoCliente = require("../models/tb_tipo_cliente");
 const Captacao = require("../models/tb_captacao");
 const CategoriaCliente = require("../models/tb_categoria_cliente");
+const Condominio = require("../models/tb_condominio");
+const Comodos = require("../models/tb_comodos");
+const Medidas = require("../models/tb_medidas");
+const Preco = require("../models/tb_preco");
+const Localizacao = require("../models/tb_localizacao");
+const Descricao = require("../models/tb_descricao");
+const Complemento = require("../models/tb_complementos");
+const Publicacao = require("../models/tb_publicacao");
+const ImagemImovel = require("../models/tb_imagem_imovel");
 
 const getNegocios = async (req, res) => {
   try {
@@ -17,7 +26,7 @@ const getNegocios = async (req, res) => {
           "id_nivel_interesse",
           "id_cliente",
           "id_imovel",
-          "id_user"
+          "id_user",
         ],
       },
       include: [
@@ -38,23 +47,66 @@ const getNegocios = async (req, res) => {
             {
               model: TipoCliente,
               as: "TipoCliente",
-              attributes: ["id_tipo_cliente", "tipo_cliente"], 
+              attributes: ["id_tipo_cliente", "tipo_cliente"],
             },
             {
               model: Captacao,
               as: "Captacao",
-              attributes: ["id_captacao", "origem_captacao"], 
+              attributes: ["id_captacao", "origem_captacao"],
             },
             {
               model: CategoriaCliente,
               as: "CategoriaCliente",
-              attributes: ["id_categoria_cliente", "categoria_cliente"], 
+              attributes: ["id_categoria_cliente", "categoria_cliente"],
             },
           ],
         },
         {
           model: NovoImovel,
           as: "NovoImovel",
+          include: [
+            {
+              model: Condominio,
+              as: "condominio",
+              attributes: ["nome_condominio"],
+            },
+
+            {
+              model: Comodos,
+              as: "comodos",
+              attributes: ["dormitorio", "suite", "banheiro"],
+            },
+            {
+              model: Medidas,
+              as: "medidas",
+              attributes: ["area_total", "area_contruida", "area_privativa"],
+            },
+            {
+              model: Preco,
+              as: "preco",
+              attributes: ["preco_imovel"],
+            },
+            {
+              model: Localizacao,
+              as: "localizacao",
+              attributes: ["cidade", "bairro", "logradouro", "numero", "cep"],
+            },
+            {
+              model: Descricao,
+              as: "descricao",
+              attributes: ["titulo", "apresentacao"],
+            },
+            {
+              model: Complemento,
+              as: "complemento",
+              attributes: ["link_youtube", "link_apresentacao", "link_drive"],
+            },
+            { 
+              model: ImagemImovel,
+              as: "fotos",
+              attributes: ["foto"] 
+            },
+          ],
         },
         {
           model: Usuario,
@@ -70,7 +122,8 @@ const getNegocios = async (req, res) => {
 
 const createNegocio = async (req, res) => {
   try {
-    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel, id_user } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel, id_user } =
+      req.body;
 
     if ((!id_etapa, !id_nivel_interesse || !id_cliente || !id_imovel)) {
       return res
@@ -83,7 +136,7 @@ const createNegocio = async (req, res) => {
       id_nivel_interesse,
       id_cliente,
       id_imovel,
-      id_user
+      id_user,
     });
     return res.status(201).json(novoNegocio);
   } catch (error) {
@@ -94,7 +147,8 @@ const createNegocio = async (req, res) => {
 const updateNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
-    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel,id_user } = req.body;
+    const { id_etapa, id_nivel_interesse, id_cliente, id_imovel, id_user } =
+      req.body;
 
     const negocio = await Negocio.findByPk(id_negocio);
     if (!negocio) {
@@ -137,7 +191,6 @@ const updateNegocioParaEtapa = async (req, res) => {
   }
 };
 
-
 const deleteNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
@@ -158,5 +211,5 @@ module.exports = {
   createNegocio,
   updateNegocio,
   deleteNegocio,
-  updateNegocioParaEtapa
+  updateNegocioParaEtapa,
 };
