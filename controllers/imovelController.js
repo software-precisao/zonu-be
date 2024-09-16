@@ -536,6 +536,7 @@ const editarImovel = async (req, res) => {
 const obterImovelCompletoId = async (req, res) => {
   try {
     const { id_imovel } = req.params;
+
     const imovel = await Imovel.findByPk(id_imovel, {
       include: [
         { model: Info, as: "info" },
@@ -543,7 +544,6 @@ const obterImovelCompletoId = async (req, res) => {
         { model: Medidas, as: "medidas" },
         { model: Preco, as: "preco" },
         { model: Foto, as: "fotos" },
-        // { model: Caracteristicas, as: "caracteristicas" },
         {
           model: Caracteristicas,
           as: "caracteristicas",
@@ -556,7 +556,6 @@ const obterImovelCompletoId = async (req, res) => {
         },
         { model: Localizacao, as: "localizacao" },
         { model: Descricao, as: "descricao" },
-        // { model: Proximidades, as: "proximidades" },
         {
           model: Proximidades,
           as: "proximidades",
@@ -578,7 +577,18 @@ const obterImovelCompletoId = async (req, res) => {
       return res.status(404).send({ message: "Imóvel não encontrado" });
     }
 
-    return res.status(200).send(imovel);
+    const perfil = await Perfil.findOne({
+      where: {
+        id_user: imovel.usuario.id_user,
+      },
+    });
+
+    const imovelResponse = {
+      ...imovel.dataValues,
+      perfil: perfil ? perfil.dataValues : perfil,
+    };
+
+    return res.status(200).send(imovelResponse);
   } catch (error) {
     console.error("Erro ao buscar Imóvel: ", error);
     return res.status(500).send({ error: error.message });
