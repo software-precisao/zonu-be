@@ -19,10 +19,10 @@ const ImagemImovel = require("../models/tb_imagem_imovel");
 const Info = require("../models/tb_info_imovel");
 const PessoasLigadas = require("../models/tb_pessoas_ligadas");
 const AnotacoesCRM = require("../models/tb_anotacao_crm")
+const Funil = require("../models/tb_funil")
 
 const getNegocios = async (req, res) => {
   try {
-    // Obtém todos os negócios com informações associadas
     const negocios = await Negocio.findAll({
       attributes: {
         exclude: [
@@ -38,6 +38,12 @@ const getNegocios = async (req, res) => {
           model: Etapa,
           as: "Etapa",
           attributes: ["id_etapa", "nome_etapa", "dias_limpeza", "descricao"],
+          include: [
+            {
+              model: Funil,
+              as: "funil",
+            },
+          ]
         },
         {
           model: NivelInteresse,
