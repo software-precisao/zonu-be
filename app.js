@@ -45,6 +45,7 @@ const rotaFunil = require("./routes/funil")
 const rotaLogo = require("./routes/logo")
 const rotaPessoasLigadas = require("./routes/pessoasLigadas")
 const rotaEtapa = require("./routes/etapa")
+const rotaWebhook = require("./routes/webhook")
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -61,8 +62,6 @@ const ProximidadesImovel = require("./models/tb_imovel_proximidades");
 const Proximidades = require("./models/tb_proximidades");
 const QrcodeImovel = require("./models/tb_qrcode");
 const NovoImovel = require("./models/tb_imovel");
-
-
 
 User.hasOne(Code, {
   foreignKey: "id_user",
@@ -125,8 +124,11 @@ NovoImovel.hasMany(QrcodeImovel, {
 });
 
 app.use(morgan("dev"));
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use("/webhook",rotaWebhook)
+
 app.use(cors());
 
 app.use((req, res, next) => {
@@ -183,7 +185,6 @@ app.use("/funil", rotaFunil)
 app.use("/logo", rotaLogo)
 app.use("/pessoasLigadas", rotaPessoasLigadas)
 app.use("/etapa", rotaEtapa)
-
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
