@@ -18,9 +18,11 @@ const Publicacao = require("../models/tb_publicacao");
 const ImagemImovel = require("../models/tb_imagem_imovel");
 const Info = require("../models/tb_info_imovel");
 const PessoasLigadas = require("../models/tb_pessoas_ligadas");
+const AnotacoesCRM = require("../models/tb_anotacao_crm")
 
 const getNegocios = async (req, res) => {
   try {
+    // Obtém todos os negócios com informações associadas
     const negocios = await Negocio.findAll({
       attributes: {
         exclude: [
@@ -71,7 +73,6 @@ const getNegocios = async (req, res) => {
               model: Condominio,
               as: "condominio",
             },
-
             {
               model: Comodos,
               as: "comodos",
@@ -114,21 +115,30 @@ const getNegocios = async (req, res) => {
     });
 
     const negociosResponse = [];
+
     for (let i = 0; i < negocios.length; i++) {
       const negocio = { ...negocios[i].dataValues };
       const { Cliente } = negocio;
 
+      if (!Cliente) {
+        negociosResponse.push(negocio);
+        continue;
+      }
+
+      const anotacoesCRM = await AnotacoesCRM.findAll({
+        where: { id_cliente: Cliente.id_cliente },
+      });
+
       const pessoasLigadas = await PessoasLigadas.findAll({
-        where: {
-          id_cliente: Cliente.id_cliente,
-        },
+        where: { id_cliente: Cliente.id_cliente },
       });
 
       negociosResponse.push({
         ...negocio,
         Cliente: {
           ...Cliente.dataValues,
-          pessoasLigadas: pessoasLigadas.map((v) => v.dataValues),
+          AnotacoesCRM: anotacoesCRM.map((anotacao) => anotacao.dataValues),
+          pessoasLigadas: pessoasLigadas.map((pessoa) => pessoa.dataValues),
         },
       });
     }
@@ -138,6 +148,7 @@ const getNegocios = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
 
 const createNegocio = async (req, res) => {
   try {
@@ -210,6 +221,31 @@ const updateNegocioParaEtapa = async (req, res) => {
   }
 };
 
+const updateStatusNegocio = async (req, res) => {
+  try {
+    const { id_negocio } = req.params;
+    const { status_negocio } = req.body;
+
+    const allowedStatuses = ["Ganho", "Perdido"];
+    if (!allowedStatuses.includes(status_negocio)) {
+      return res.status(400).json({ message: "Status inválido. Use 'Ganho' ou 'Perdido'." });
+    }
+
+    const negocio = await Negocio.findByPk(id_negocio);
+    if (!negocio) {
+      return res.status(404).json({ message: "Negócio não encontrado" });
+    }
+
+    negocio.status_negocio = status_negocio;
+    await negocio.save();
+
+    return res.status(200).json({ message: "Status do negócio atualizado com sucesso", negocio });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
 const deleteNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
@@ -231,4 +267,5 @@ module.exports = {
   updateNegocio,
   deleteNegocio,
   updateNegocioParaEtapa,
+  updateStatusNegocio
 };
