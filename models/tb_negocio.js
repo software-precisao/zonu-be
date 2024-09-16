@@ -35,6 +35,11 @@ const Negocio = conn.define(
     id_imovel: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    status_negocio: {
+      type: DataTypes.STRING,
+      allowNull: true,
+
     }
   },
   { freezeTableName: true }

@@ -210,6 +210,31 @@ const updateNegocioParaEtapa = async (req, res) => {
   }
 };
 
+const updateStatusNegocio = async (req, res) => {
+  try {
+    const { id_negocio } = req.params;
+    const { status_negocio } = req.body;
+
+    const allowedStatuses = ["Ganho", "Perdido"];
+    if (!allowedStatuses.includes(status_negocio)) {
+      return res.status(400).json({ message: "Status inválido. Use 'Ganho' ou 'Perdido'." });
+    }
+
+    const negocio = await Negocio.findByPk(id_negocio);
+    if (!negocio) {
+      return res.status(404).json({ message: "Negócio não encontrado" });
+    }
+
+    negocio.status_negocio = status_negocio;
+    await negocio.save();
+
+    return res.status(200).json({ message: "Status do negócio atualizado com sucesso", negocio });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
 const deleteNegocio = async (req, res) => {
   try {
     const { id_negocio } = req.params;
@@ -231,4 +256,5 @@ module.exports = {
   updateNegocio,
   deleteNegocio,
   updateNegocioParaEtapa,
+  updateStatusNegocio
 };
