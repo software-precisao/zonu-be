@@ -17,6 +17,7 @@ const Complemento = require("../models/tb_complementos");
 const Publicacao = require("../models/tb_publicacao");
 const ImagemImovel = require("../models/tb_imagem_imovel");
 const Info = require("../models/tb_info_imovel");
+const PessoasLigadas = require("../models/tb_pessoas_ligadas");
 
 const getNegocios = async (req, res) => {
   try {
@@ -111,7 +112,28 @@ const getNegocios = async (req, res) => {
         },
       ],
     });
-    return res.status(200).json(negocios);
+
+    const negociosResponse = [];
+    for (let i = 0; i < negocios.length; i++) {
+      const negocio = { ...negocios[i].dataValues };
+      const { Cliente } = negocio;
+
+      const pessoasLigadas = await PessoasLigadas.findAll({
+        where: {
+          id_cliente: Cliente.id_cliente,
+        },
+      });
+
+      negociosResponse.push({
+        ...negocio,
+        Cliente: {
+          ...Cliente.dataValues,
+          pessoasLigadas: pessoasLigadas.map((v) => v.dataValues),
+        },
+      });
+    }
+
+    return res.status(200).json(negociosResponse);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
