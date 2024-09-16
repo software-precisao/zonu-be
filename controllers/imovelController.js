@@ -17,6 +17,7 @@ const Imovel = require("../models/tb_imovel");
 const Qrcode = require("../models/tb_qrcode");
 const User = require("../models/tb_usuarios");
 const Negocio = require("../models/tb_negocio");
+const Perfil = require("../models/tb_perfil");
 
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -586,7 +587,7 @@ const obterImovelCompletoId = async (req, res) => {
 
 const obterTodosImoveisCompletos = async (req, res) => {
   try {
-    const imovel = await Imovel.findAll({
+    const imoveis = await Imovel.findAll({
       include: [
         { model: Info, as: "info" },
         { model: Comodos, as: "comodos" },
@@ -622,11 +623,27 @@ const obterTodosImoveisCompletos = async (req, res) => {
       ],
     });
 
-    if (!imovel) {
+    const imoveisResponse = [];
+    for (let i = 0; i < imoveis.length; i++) {
+      const imovel = { ...imoveis[i].dataValues };
+
+      const perfil = await Perfil.findOne({
+        where: {
+          id_user: imovel.usuario.id_user,
+        },
+      });
+
+      imoveisResponse.push({
+        ...imovel,
+        perfil: perfil ? perfil.dataValues : perfil,
+      });
+    }
+
+    if (!imoveis) {
       return res.status(404).send({ message: "Imóvel não encontrado" });
     }
 
-    return res.status(200).send(imovel);
+    return res.status(200).send(imoveisResponse);
   } catch (error) {
     console.error("Erro ao buscar Imóvel: ", error);
     return res.status(500).send({ error: error.message });
