@@ -45,6 +45,7 @@ const rotaFunil = require("./routes/funil")
 const rotaLogo = require("./routes/logo")
 const rotaPessoasLigadas = require("./routes/pessoasLigadas")
 const rotaEtapa = require("./routes/etapa")
+const rotaAnotacaoCRM = require("./routes/anotacaoCrm")
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -183,6 +184,7 @@ app.use("/funil", rotaFunil)
 app.use("/logo", rotaLogo)
 app.use("/pessoasLigadas", rotaPessoasLigadas)
 app.use("/etapa", rotaEtapa)
+app.use("/anotacao-crm", rotaAnotacaoCRM)
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
