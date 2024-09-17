@@ -140,13 +140,7 @@ const getNegocios = async (req, res) => {
         where: {
           id_cliente: Cliente.id_cliente,
         },
-        include: [
-          {
-            model: Usuario,
-            as: "Usuario",
-            attributes: ["nome"],
-          },
-        ],
+       
       });
 
       negociosResponse.push({
