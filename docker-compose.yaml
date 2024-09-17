@@ -1,0 +1,17 @@
+services:
+  mysql:
+    container_name: mysql_zonu
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: zonu_root_password
+      MYSQL_DATABASE: db_zonu
+      MYSQL_USER: zonu_user
+      MYSQL_PASSWORD: zonu_password
+    volumes:
+      - mysql_zonu_data:/var/lib/mysql
+
+volumes:
+  mysql_zonu_data:
+    driver: local
