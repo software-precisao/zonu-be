@@ -118,6 +118,7 @@ const getNegocios = async (req, res) => {
           as: "Usuario",
         },
       ],
+      
     });
 
     const negociosResponse = [];
@@ -136,7 +137,16 @@ const getNegocios = async (req, res) => {
       });
 
       const pessoasLigadas = await PessoasLigadas.findAll({
-        where: { id_cliente: Cliente.id_cliente },
+        where: {
+          id_cliente: Cliente.id_cliente,
+        },
+        include: [
+          {
+            model: Usuario,
+            as: "Usuario",
+            attributes: ["nome"],
+          },
+        ],
       });
 
       negociosResponse.push({

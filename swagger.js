@@ -11,11 +11,11 @@ const swaggerDefinition = {
         description: 'Servidor de Produção',
       },
     ],
-  };
+};
   
   const options = {
     swaggerDefinition,
-    // Caminho para os arquivos das rotas
+    
     apis: ['./routes/*.js'], 
   };
   
