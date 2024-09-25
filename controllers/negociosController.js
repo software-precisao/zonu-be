@@ -126,23 +126,22 @@ const getNegocios = async (req, res) => {
     for (let i = 0; i < negocios.length; i++) {
       const negocio = { ...negocios[i].dataValues };
       const { Cliente } = negocio;
-
+    
       if (!Cliente) {
         negociosResponse.push(negocio);
         continue;
       }
-
+    
       const anotacoesCRM = await AnotacoesCRM.findAll({
-        where: { id_cliente: Cliente.id_cliente },
+        where: { id_negocio: negocio.id_negocio },
       });
-
+    
       const pessoasLigadas = await PessoasLigadas.findAll({
         where: {
           id_cliente: Cliente.id_cliente,
         },
-       
       });
-
+    
       negociosResponse.push({
         ...negocio,
         Cliente: {
@@ -152,6 +151,7 @@ const getNegocios = async (req, res) => {
         },
       });
     }
+    
 
     return res.status(200).json(negociosResponse);
   } catch (error) {
