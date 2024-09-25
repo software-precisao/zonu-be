@@ -12,7 +12,7 @@ const TokenPayment = conn.define(
     },
     api_key: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     url_base: {
       type: DataTypes.STRING,

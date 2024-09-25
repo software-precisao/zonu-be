@@ -22,7 +22,7 @@ const Controle = conn.define(
     },
     customerId: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     id_plano: {
       type: DataTypes.INTEGER,
