@@ -1,11 +1,11 @@
 const AnotacaoCRM = require("../models/tb_anotacao_crm"); 
-const Cliente = require("../models/tb_clientes");
+const negocio = require("../models/tb_negocio");
 
 const criarAnotacaoCRM = async (req, res) => {
   try {
-    const { id_cliente, anotacao } = req.body;
+    const { id_negocio, anotacao } = req.body;
 
-    const novaAnotacao = await AnotacaoCRM.create({ id_cliente, anotacao });
+    const novaAnotacao = await AnotacaoCRM.create({ id_negocio, anotacao });
 
     return res.status(201).send(novaAnotacao);
   } catch (error) {
@@ -17,7 +17,7 @@ const criarAnotacaoCRM = async (req, res) => {
 const obterTodasAnotacoesCRM = async (req, res) => {
   try {
     const anotacoes = await AnotacaoCRM.findAll({
-      include: { model: Cliente, as: "cliente" }, 
+      include: { model: negocio, as: "negocio" }, 
     });
 
     return res.status(200).send(anotacoes);
@@ -32,7 +32,7 @@ const obterAnotacaoCRMPorId = async (req, res) => {
     const { id_anotacao_crm } = req.params;
 
     const anotacao = await AnotacaoCRM.findByPk(id_anotacao_crm, {
-      include: { model: Cliente, as: "cliente" }, 
+      include: { model: negocio, as: "negocio" }, 
     });
 
     if (!anotacao) {
@@ -49,7 +49,7 @@ const obterAnotacaoCRMPorId = async (req, res) => {
 const atualizarAnotacaoCRM = async (req, res) => {
   try {
     const { id_anotacao_crm } = req.params;
-    const { id_cliente, anotacao } = req.body;
+    const { id_negocio, anotacao } = req.body;
 
     const anotacaoExistente = await AnotacaoCRM.findByPk(id_anotacao_crm);
 
@@ -58,7 +58,7 @@ const atualizarAnotacaoCRM = async (req, res) => {
     }
 
     const anotacaoAtualizada = await anotacaoExistente.update({
-      id_cliente,
+      id_negocio,
       anotacao,
     });
 

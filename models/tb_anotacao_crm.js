@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
-const Cliente = require("./tb_clientes");
+const Negocio = require("./tb_negocio");
 
 const AnotacaoCRM = conn.define(
   "tb_anotacao_crm",
@@ -11,7 +11,7 @@ const AnotacaoCRM = conn.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    id_cliente: {
+    id_negocio: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -23,9 +23,9 @@ const AnotacaoCRM = conn.define(
   { freezeTableName: true }
 );
 
-AnotacaoCRM.belongsTo(Cliente, {
-  foreignKey: "id_cliente",
-  as: "cliente", 
+AnotacaoCRM.belongsTo(Negocio, {
+  foreignKey: "id_negocio",
+  as: "negocio", 
   foreignKeyConstraint: true,
 });
 
