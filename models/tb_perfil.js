@@ -81,6 +81,10 @@ const Perfil = conn.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    nome_construtora: {
+      type: DataTypes.STRING, 
+      allowNull: true
+    },
     id_user: {
       type: DataTypes.INTEGER,
       allowNull: true,

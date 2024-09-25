@@ -91,6 +91,7 @@ const cadastrarUsuarioConstrutora = async (req, res, next) => {
       estado: req.body.estado,
       bairro: req.body.bairro,
       id_user: novoUsuario.id_user,
+      nome_construtora: req.body.nome_construtora
     });
 
     const codigoAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
