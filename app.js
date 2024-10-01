@@ -47,6 +47,9 @@ const rotaPessoasLigadas = require("./routes/pessoasLigadas")
 const rotaEtapa = require("./routes/etapa")
 const rotaAnotacaoCRM = require("./routes/anotacaoCrm")
 const rotaFacebook = require("./routes/facebook");
+const rotaVendas = require("./routes/vendas")
+const rotaLocacao = require("./routes/locacao")
+
 
 const Code = require("./models/tb_code");
 const Token = require("./models/tb_token");
@@ -185,8 +188,10 @@ app.use("/logo", rotaLogo)
 app.use("/pessoasLigadas", rotaPessoasLigadas)
 app.use("/etapa", rotaEtapa)
 app.use("/anotacao-crm", rotaAnotacaoCRM)
-
 app.use("/facebook", rotaFacebook);
+app.use("/vendas", rotaVendas)
+app.use("/locacao", rotaLocacao)
+
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
