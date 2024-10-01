@@ -83,14 +83,14 @@ const criarVenda = async (req, res, next) => {
 
 const atualizarVenda = async (req, res, next) => {
   try {
-    const { id_etapa, id_user } = req.body; // Incluindo id_user no corpo da requisição
+    const { id_etapa, id_user } = req.body; 
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).send({ message: "Etapa não encontrada" });
     }
 
-    const usuario = await Usuario.findByPk(id_user); // Verificando se o usuário existe
+    const usuario = await Usuario.findByPk(id_user);
     if (!usuario) {
       return res.status(404).send({ message: "Usuário não encontrado" });
     }

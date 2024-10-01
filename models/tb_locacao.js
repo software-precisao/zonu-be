@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
 const Etapa = require("./tb_etapa");
+const Usuario = require("./tb_usuarios");
 
 const Locacao = conn.define(
   "tb_locacao",
@@ -15,6 +16,10 @@ const Locacao = conn.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    id_user: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   { freezeTableName: true }
 );
@@ -25,5 +30,13 @@ Locacao.belongsTo(Etapa, {
     onDelete: 'CASCADE', 
     onUpdate: 'CASCADE'
 })
+
+Locacao.belongsTo(Usuario, {
+  foreignKey: "id_user",
+  as: "usuario",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
+})
+
 
 module.exports = Locacao;

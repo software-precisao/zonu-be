@@ -2,6 +2,7 @@ const Locacao = require("../models/tb_locacao");
 const Funil = require("../models/tb_funil");
 const Etapa = require("../models/tb_etapa");
 const e = require("cors");
+const Usuario = require("../models/tb_usuarios");
 
 const obterLocacoes = async (req, res, next) => {
   try {
@@ -16,6 +17,10 @@ const obterLocacoes = async (req, res, next) => {
               as: "funil", 
             },
           ],
+        },
+        {
+          model: Usuario, 
+          as: "usuario", 
         },
       ],
     });
@@ -39,6 +44,10 @@ const obterLocacaoPorId = async (req, res, next) => {
             },
           ],
         },
+        {
+          model: Usuario, 
+          as: "usuario", 
+        },
       ],
     });
     if (locacao) {
@@ -53,14 +62,19 @@ const obterLocacaoPorId = async (req, res, next) => {
 
 const criarLocacao = async (req, res, next) => {
   try {
-    const { id_etapa } = req.body;
+    const { id_etapa, id_user } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).send({ message: "etapa não encontrada" });
     }
+    
+    const usuario = await Usuario.findByPk(id_user); 
+    if (!usuario) {
+      return res.status(404).send({ message: "Usuário não encontrado" });
+    }
 
-    const novaLocacao = await Locacao.create({ id_etapa });
+    const novaLocacao = await Locacao.create({ id_etapa, id_user });
     return res.status(201).send({ response: novaLocacao });
   } catch (error) {
     console.error("Erro ao criar locação: ", error);
@@ -70,15 +84,20 @@ const criarLocacao = async (req, res, next) => {
 
 const atualizarLocacao = async (req, res, next) => {
   try {
-    const { id_etapa } = req.body;
+    const { id_etapa, id_user } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).send({ message: "etapa não encontrada" });
     }
 
+    const usuario = await Usuario.findByPk(id_user);
+    if (!usuario) {
+      return res.status(404).send({ message: "Usuário não encontrado" });
+    }
+
     const locacaoAtualizada = await Locacao.update(
-      { id_etapa },
+      { id_etapa, id_user },
       { where: { id_locacao: req.params.id_locacao } }
     );
 
