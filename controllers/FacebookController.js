@@ -10,15 +10,15 @@ async function getLongLivedToken(shortLifeToken) {
     );
 
     const data = await response.json();
-    console.log("req feace", response);
     if (response.ok) {
-      console.log("token", data.access_token);
+      console.log("Token de longa duração:", data.access_token);
       return data.access_token;
     } else {
       throw new Error(data.error.message);
     }
   } catch (err) {
-    console.log(err);
+    console.log("Erro ao obter token de longa duração:", err);
+    throw err;
   }
 }
 
@@ -28,12 +28,12 @@ module.exports = class FacebookController {
       const { accessToken: shortLivedToken, id_user } = req.body;
 
       if (!shortLivedToken) {
-        throw new Error("Token de acesso não foi fornecido");
+        return res.status(400).send("Token de acesso não foi fornecido.");
       }
 
       const longLivedToken = await getLongLivedToken(shortLivedToken);
       const userInfoResponse = await fetch(
-        `https://graph.facebook.com/me?access_token=${shortLivedToken}`
+        `https://graph.facebook.com/me?access_token=${longLivedToken}`
       );
       const userInfo = await userInfoResponse.json();
 
@@ -48,41 +48,66 @@ module.exports = class FacebookController {
       });
 
       if (!userExists) {
-        throw new Error("Usuário não encontrado");
+        return res.status(404).send("Usuário não encontrado.");
       }
 
-      console.log("userInfo", userInfo);
+      console.log("Informações do usuário:", userInfo);
 
       const body = {
         id_user,
         shortLifeToken: shortLivedToken,
         longLifeToken: longLivedToken,
         facebookId: userInfo.id,
+        pageFacebookId: userInfo.pageId || null,
       };
 
-      const user = await Facebook.create(body);
+      const facebookUserExists = await Facebook.findOne({
+        where: { id_user },
+      });
 
-      console.log(user);
+      if (facebookUserExists) {
+        await Facebook.update(body, { where: { id_user } });
+        console.log("Usuário do Facebook atualizado com sucesso:", body);
+      } else {
+        const user = await Facebook.create(body);
+        console.log("Novo usuário do Facebook criado:", user);
+      }
 
       res.send(
         "Autorização concluída e token de longa duração salvo com sucesso!"
       );
     } catch (err) {
-      console.log(err);
-      res.status(500).send("Erro ao autenticar com o Facebook");
+      console.log("Erro ao autenticar com o Facebook:", err);
+      res.status(500).send("Erro ao autenticar com o Facebook.");
     }
   }
 
   static async getLeads(req, res) {
     try {
       const { pageId } = req.query;
-      const leads = await fetch(
-        `https://graph.facebook.com/v12.0/${pageId}/leadgen_forms?access_token=${accessToken}`
+
+      const userId = req.user.id;
+      const facebookAccount = await Facebook.findOne({
+        where: { id_user: userId },
+      });
+
+      if (!facebookAccount) {
+        return res.status(404).send("Conta do Facebook não encontrada.");
+      }
+
+      const leadsResponse = await fetch(
+        `https://graph.facebook.com/v12.0/${pageId}/leadgen_forms?access_token=${facebookAccount.longLifeToken}`
       );
-      
+
+      if (!leadsResponse.ok) {
+        throw new Error("Erro ao buscar leads.");
+      }
+
+      const leads = await leadsResponse.json();
+      res.json(leads);
     } catch (err) {
-      console.log(err);
-      res.status(500).send("Erro ao buscar leads");
+      console.log("Erro ao buscar leads:", err);
+      res.status(500).send("Erro ao buscar leads.");
     }
   }
 
@@ -91,9 +116,7 @@ module.exports = class FacebookController {
       const { id_user } = req.body;
 
       const facebookAccount = await Facebook.findOne({
-        where: {
-          id_user,
-        },
+        where: { id_user },
       });
 
       if (!facebookAccount) {
@@ -109,15 +132,11 @@ module.exports = class FacebookController {
         throw new Error("Erro ao revogar o token de acesso do Facebook.");
       }
 
-      await Facebook.destroy({
-        where: {
-          id_user,
-        },
-      });
+      await Facebook.destroy({ where: { id_user } });
 
       res.send("Logout realizado com sucesso e token revogado.");
     } catch (err) {
-      console.log(err);
+      console.log("Erro ao realizar logout:", err);
       res.status(500).send("Erro ao realizar logout.");
     }
   }
