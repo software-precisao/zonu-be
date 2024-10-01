@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
 const Etapa = require("./tb_etapa");
+const Usuario = require("./tb_usuarios");
 
 const Vendas = conn.define(
   "tb_vendas",
@@ -11,11 +12,11 @@ const Vendas = conn.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    descricao: {
-      type: DataTypes.STRING,
+    id_etapa: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    id_etapa: {
+    id_user: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -28,6 +29,13 @@ Vendas.belongsTo(Etapa, {
     as: "etapa",
     onDelete: 'CASCADE', 
     onUpdate: 'CASCADE'
+})
+
+Vendas.belongsTo(Usuario, {
+  foreignKey: "id_user",
+  as: "usuario",
+  onDelete: 'CASCADE', 
+  onUpdate: 'CASCADE'
 })
 
 module.exports = Vendas;

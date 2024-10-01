@@ -11,10 +11,6 @@ const Locacao = conn.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    descricao: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     id_etapa: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -1,6 +1,7 @@
 const Vendas = require("../models/tb_vendas");
 const Funil = require("../models/tb_funil");
 const Etapa = require("../models/tb_etapa");
+const Usuario = require("../models/tb_usuarios");
 
 const obterVendas = async (req, res, next) => {
   try {
@@ -15,6 +16,10 @@ const obterVendas = async (req, res, next) => {
               as: "funil", 
             },
           ],
+        },
+        {
+          model: Usuario, 
+          as: "usuario", 
         },
       ],
     });
@@ -38,6 +43,10 @@ const obterVendaPorId = async (req, res, next) => {
             },
           ],
         },
+        {
+          model: Usuario, 
+          as: "usuario", 
+        },
       ],
     });
     if (venda) {
@@ -52,14 +61,19 @@ const obterVendaPorId = async (req, res, next) => {
 
 const criarVenda = async (req, res, next) => {
   try {
-    const { descricao, id_etapa } = req.body;
+    const { id_etapa, id_user } = req.body; 
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
-      return res.status(404).send({ message: "etapa não encontrada" });
+      return res.status(404).send({ message: "Etapa não encontrada" });
     }
 
-    const novaVenda = await Vendas.create({ descricao, id_etapa });
+    const usuario = await Usuario.findByPk(id_user); 
+    if (!usuario) {
+      return res.status(404).send({ message: "Usuário não encontrado" });
+    }
+
+    const novaVenda = await Vendas.create({ id_etapa, id_user });
     return res.status(201).send({ response: novaVenda });
   } catch (error) {
     console.error("Erro ao criar venda: ", error);
@@ -69,15 +83,20 @@ const criarVenda = async (req, res, next) => {
 
 const atualizarVenda = async (req, res, next) => {
   try {
-    const { descricao, id_etapa } = req.body;
+    const { id_etapa, id_user } = req.body; // Incluindo id_user no corpo da requisição
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
-      return res.status(404).send({ message: "etapa não encontrada" });
+      return res.status(404).send({ message: "Etapa não encontrada" });
+    }
+
+    const usuario = await Usuario.findByPk(id_user); // Verificando se o usuário existe
+    if (!usuario) {
+      return res.status(404).send({ message: "Usuário não encontrado" });
     }
 
     const vendaAtualizada = await Vendas.update(
-      { descricao, id_etapa },
+      { id_etapa, id_user },
       { where: { id_venda: req.params.id_venda } }
     );
 

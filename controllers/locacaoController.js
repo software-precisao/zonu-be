@@ -53,14 +53,14 @@ const obterLocacaoPorId = async (req, res, next) => {
 
 const criarLocacao = async (req, res, next) => {
   try {
-    const { descricao, id_etapa } = req.body;
+    const { id_etapa } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
       return res.status(404).send({ message: "etapa não encontrada" });
     }
 
-    const novaLocacao = await Locacao.create({ descricao, id_etapa });
+    const novaLocacao = await Locacao.create({ id_etapa });
     return res.status(201).send({ response: novaLocacao });
   } catch (error) {
     console.error("Erro ao criar locação: ", error);
@@ -70,7 +70,7 @@ const criarLocacao = async (req, res, next) => {
 
 const atualizarLocacao = async (req, res, next) => {
   try {
-    const { descricao, id_etapa } = req.body;
+    const { id_etapa } = req.body;
 
     const etapa = await Etapa.findByPk(id_etapa);
     if (!etapa) {
@@ -78,7 +78,7 @@ const atualizarLocacao = async (req, res, next) => {
     }
 
     const locacaoAtualizada = await Locacao.update(
-      { descricao, id_etapa },
+      { id_etapa },
       { where: { id_locacao: req.params.id_locacao } }
     );
 
