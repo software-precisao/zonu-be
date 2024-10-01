@@ -1,10 +1,23 @@
 const Locacao = require("../models/tb_locacao");
 const Funil = require("../models/tb_funil");
+const Etapa = require("../models/tb_etapa");
+const e = require("cors");
 
 const obterLocacoes = async (req, res, next) => {
   try {
     const locacoes = await Locacao.findAll({
-      include: [{ model: Funil, as: "funil" }],
+      include: [
+        {
+          model: Etapa,
+          as: "etapa",
+          include: [
+            {
+              model: Funil, 
+              as: "funil", 
+            },
+          ],
+        },
+      ],
     });
     return res.status(200).send({ response: locacoes });
   } catch (error) {
@@ -15,7 +28,18 @@ const obterLocacoes = async (req, res, next) => {
 const obterLocacaoPorId = async (req, res, next) => {
   try {
     const locacao = await Locacao.findByPk(req.params.id_locacao, {
-      include: [{ model: Funil, as: "funil" }],
+      include: [
+        {
+          model: Etapa,
+          as: "etapa",
+          include: [
+            {
+              model: Funil, 
+              as: "funil", 
+            },
+          ],
+        },
+      ],
     });
     if (locacao) {
       return res.status(200).send({ response: locacao });
@@ -29,14 +53,14 @@ const obterLocacaoPorId = async (req, res, next) => {
 
 const criarLocacao = async (req, res, next) => {
   try {
-    const { descricao, id_funil } = req.body;
+    const { descricao, id_etapa } = req.body;
 
-    const funil = await Funil.findByPk(id_funil);
-    if (!funil) {
-      return res.status(404).send({ message: "Funil não encontrado" });
+    const etapa = await Etapa.findByPk(id_etapa);
+    if (!etapa) {
+      return res.status(404).send({ message: "etapa não encontrada" });
     }
 
-    const novaLocacao = await Locacao.create({ descricao, id_funil });
+    const novaLocacao = await Locacao.create({ descricao, id_etapa });
     return res.status(201).send({ response: novaLocacao });
   } catch (error) {
     console.error("Erro ao criar locação: ", error);
@@ -46,15 +70,15 @@ const criarLocacao = async (req, res, next) => {
 
 const atualizarLocacao = async (req, res, next) => {
   try {
-    const { descricao, id_funil } = req.body;
+    const { descricao, id_etapa } = req.body;
 
-    const funil = await Funil.findByPk(id_funil);
-    if (!funil) {
-      return res.status(404).send({ message: "Funil não encontrado" });
+    const etapa = await Etapa.findByPk(id_etapa);
+    if (!etapa) {
+      return res.status(404).send({ message: "etapa não encontrada" });
     }
 
     const locacaoAtualizada = await Locacao.update(
-      { descricao, id_funil },
+      { descricao, id_etapa },
       { where: { id_locacao: req.params.id_locacao } }
     );
 

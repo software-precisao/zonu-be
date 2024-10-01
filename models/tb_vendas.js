@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const conn = require("../data/conn");
 
-const Funil = require("./tb_funil")
+const Etapa = require("./tb_etapa");
 
 const Vendas = conn.define(
   "tb_vendas",
@@ -15,7 +15,7 @@ const Vendas = conn.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    id_funil: {
+    id_etapa: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -23,9 +23,9 @@ const Vendas = conn.define(
   { freezeTableName: true }
 );
 
-Vendas.belongsTo(Funil, {
-    foreignKey: "id_funil",
-    as: "funil",
+Vendas.belongsTo(Etapa, {
+    foreignKey: "id_etapa",
+    as: "etapa",
     onDelete: 'CASCADE', 
     onUpdate: 'CASCADE'
 })

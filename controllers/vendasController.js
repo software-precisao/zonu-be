@@ -1,10 +1,22 @@
 const Vendas = require("../models/tb_vendas");
 const Funil = require("../models/tb_funil");
+const Etapa = require("../models/tb_etapa");
 
 const obterVendas = async (req, res, next) => {
   try {
     const vendas = await Vendas.findAll({
-      include: [{ model: Funil, as: "funil" }],
+      include: [
+        {
+          model: Etapa,
+          as: "etapa",
+          include: [
+            {
+              model: Funil, 
+              as: "funil", 
+            },
+          ],
+        },
+      ],
     });
     return res.status(200).send({ response: vendas });
   } catch (error) {
@@ -15,7 +27,18 @@ const obterVendas = async (req, res, next) => {
 const obterVendaPorId = async (req, res, next) => {
   try {
     const venda = await Vendas.findByPk(req.params.id_venda, {
-      include: [{ model: Funil, as: "funil" }],
+      include: [
+        {
+          model: Etapa,
+          as: "etapa",
+          include: [
+            {
+              model: Funil, 
+              as: "funil", 
+            },
+          ],
+        },
+      ],
     });
     if (venda) {
       return res.status(200).send({ response: venda });
@@ -29,14 +52,14 @@ const obterVendaPorId = async (req, res, next) => {
 
 const criarVenda = async (req, res, next) => {
   try {
-    const { descricao, id_funil } = req.body;
+    const { descricao, id_etapa } = req.body;
 
-    const funil = await Funil.findByPk(id_funil);
-    if (!funil) {
-      return res.status(404).send({ message: "Funil não encontrado" });
+    const etapa = await Etapa.findByPk(id_etapa);
+    if (!etapa) {
+      return res.status(404).send({ message: "etapa não encontrada" });
     }
 
-    const novaVenda = await Vendas.create({ descricao, id_funil });
+    const novaVenda = await Vendas.create({ descricao, id_etapa });
     return res.status(201).send({ response: novaVenda });
   } catch (error) {
     console.error("Erro ao criar venda: ", error);
@@ -46,15 +69,15 @@ const criarVenda = async (req, res, next) => {
 
 const atualizarVenda = async (req, res, next) => {
   try {
-    const { descricao, id_funil } = req.body;
+    const { descricao, id_etapa } = req.body;
 
-    const funil = await Funil.findByPk(id_funil);
-    if (!funil) {
-      return res.status(404).send({ message: "Funil não encontrado" });
+    const etapa = await Etapa.findByPk(id_etapa);
+    if (!etapa) {
+      return res.status(404).send({ message: "etapa não encontrada" });
     }
 
     const vendaAtualizada = await Vendas.update(
-      { descricao, id_funil },
+      { descricao, id_etapa },
       { where: { id_venda: req.params.id_venda } }
     );
 
