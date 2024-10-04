@@ -60,8 +60,10 @@ const cadastrarConstrutoraSimplificada = async (req, res) => {
       nome: nome_responsavel,
       email: email,
       senha: hashedPassword,
-      id_nivel: 4, 
+      id_nivel: 3, 
       id_status: 2, 
+      id_plano: 4,
+      initial: 2,
     });
 
     const novoPerfil = await Perfil.create({
