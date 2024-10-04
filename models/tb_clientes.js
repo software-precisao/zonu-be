@@ -18,11 +18,11 @@ const Cliente = conn.define("tb_clientes", {
   },
   id_captacao: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   id_categoria_cliente: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   id_user: {
     type: DataTypes.INTEGER,
@@ -30,7 +30,7 @@ const Cliente = conn.define("tb_clientes", {
   },
   nome: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   rg: {
     type: DataTypes.STRING,
