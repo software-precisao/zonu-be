@@ -79,7 +79,7 @@ const Perfil = conn.define(
     },
     termos: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     nome_construtora: {
       type: DataTypes.STRING, 

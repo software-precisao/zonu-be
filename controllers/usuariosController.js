@@ -39,6 +39,59 @@ const { Op } = require("sequelize");
 
 //POST de usuários
 
+
+const cadastrarConstrutoraSimplificada = async (req, res) => {
+  try {
+    const { nome_construtora, nome_responsavel, telefone, email, senha } = req.body;
+
+    const usuarioExistente = await User.findOne({
+      where: { email: email },
+    });
+
+    if (usuarioExistente) {
+      return res.status(409).send({
+        mensagem: "Email já cadastrado, por favor insira um email diferente!",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(senha, 10);
+
+    const novoUsuario = await User.create({
+      nome: nome_responsavel,
+      email: email,
+      senha: hashedPassword,
+      id_nivel: 4, 
+      id_status: 2, 
+    });
+
+    const novoPerfil = await Perfil.create({
+      nome_construtora: nome_construtora,
+      telefone: telefone,
+      id_user: novoUsuario.id_user,
+    });
+
+    const response = {
+      mensagem: "Usuário cadastrado com sucesso",
+      usuarioCriado: {
+        id_user: novoUsuario.id_user,
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        perfil: {
+          id_perfil: novoPerfil.id_perfil,
+          nome_construtora: novoPerfil.nome_construtora,
+          telefone: novoPerfil.telefone,
+        },
+      },
+    };
+
+    return res.status(201).send(response);
+  } catch (error) {
+    console.error("Erro ao cadastrar construtora:", error);
+    return res.status(500).send({ error: error.message });
+  }
+};
+
+
 const cadastrarUsuarioConstrutora = async (req, res, next) => {
   try {
     const perfilExistente = await Perfil.findOne({
@@ -2083,5 +2136,6 @@ module.exports = {
   obterSubUsuarioImobiliaria,
   atualizarFilenameDoc,
   editarSubUsuarioImobiliaria,
+  cadastrarConstrutoraSimplificada,
   deletarSubUsuarioImobiliaria,
 };

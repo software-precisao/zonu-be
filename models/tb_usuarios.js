@@ -19,7 +19,7 @@ const Usuario = conn.define(
     },
     sobrenome: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
@@ -48,7 +48,7 @@ const Usuario = conn.define(
     },
     initial: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
   },
   { freezeTableName: true }
