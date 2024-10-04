@@ -18,6 +18,8 @@ const Qrcode = require("../models/tb_qrcode");
 const User = require("../models/tb_usuarios");
 const Negocio = require("../models/tb_negocio");
 const Perfil = require("../models/tb_perfil");
+const ImovelProximidades = require("../models/tb_imovel_proximidades");
+
 
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -734,6 +736,8 @@ const excluirImovel = async (req, res) => {
       return res.status(404).json({ mensagem: "Imóvel não encontrado" });
     }
 
+    await ImovelProximidades.destroy({ where: { id_imovel } });
+
     await Negocio.destroy({ where: { id_imovel } });
 
     await Imovel.destroy({ where: { id_imovel } });
@@ -746,6 +750,7 @@ const excluirImovel = async (req, res) => {
       .json({ mensagem: "Erro ao excluir o imóvel", error: error.message });
   }
 };
+
 
 module.exports = {
   criarImovel,
